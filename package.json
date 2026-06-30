@@ -1,0 +1,28 @@
+{
+  "name": "hcms",
+  "version": "1.0.0",
+  "description": "House Church Management System",
+  "main": "index.js",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:mobile": "turbo run dev --filter=mobile",
+    "dev:backend": "turbo run dev --filter=backend",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "e2e:web": "playwright test",
+    "e2e:web:ui": "playwright test --ui",
+    "e2e:mobile": "pnpm --filter mobile e2e:mobile"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.20.0",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "^24.0.0",
+    "turbo": "2.10.1",
+    "typescript": "6.0.3"
+  }
+}

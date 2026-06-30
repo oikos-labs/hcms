@@ -1,0 +1,11 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": true,
+    "resolvePackageJsonExports": true,
+    "types": ["node"]
+  },
+  "include": ["playwright.config.ts"]
+}

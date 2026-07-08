@@ -1,0 +1,26 @@
+#!/bin/sh
+
+run_step () {
+  NAME=$1
+  CMD=$2
+
+  echo "▶ Running $NAME..."
+  sh -c "$CMD"
+  RESULT=$?
+
+  if [ $RESULT -ne 0 ]; then
+    echo "❌ $NAME failed. Push aborted."
+    exit 1
+  fi
+}
+
+run_step "backend lint" "pnpm --filter backend exec eslint \"src/**/*.ts\" --max-warnings=0"
+run_step "backend format" "pnpm --filter backend exec prettier --check \"src/**/*.ts\""
+run_step "mobile lint" "pnpm --filter mobile exec sh -c 'if [ -f eslint.config.js ] || [ -f eslint.config.cjs ] || [ -f eslint.config.mjs ]; then eslint app/**/*.{ts,tsx} --max-warnings=0; else echo \"No mobile ESLint config found; skipping.\"; fi'"
+run_step "mobile format" "pnpm --filter mobile exec sh -c 'if [ -f .prettierrc ] || [ -f .prettierrc.json ] || [ -f .prettierrc.js ] || [ -f prettier.config.js ] || [ -f prettier.config.cjs ] || [ -f prettier.config.mjs ]; then prettier --check app/**/*.{ts,tsx}; else echo \"No mobile Prettier config found; skipping.\"; fi'"
+run_step "type check" "pnpm run typecheck"
+run_step "tests" "pnpm run test"
+run_step "build" "pnpm run build"
+
+echo "✅ All checks passed. Push allowed."
+exit 0

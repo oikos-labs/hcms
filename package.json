@@ -9,10 +9,13 @@
     "dev:backend": "turbo run dev --filter=backend",
     "build": "turbo run build",
     "lint": "turbo run lint",
+    "format": "turbo run format",
     "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
     "e2e:web": "playwright test",
     "e2e:web:ui": "playwright test --ui",
-    "e2e:mobile": "pnpm --filter mobile e2e:mobile"
+    "e2e:mobile": "pnpm --filter mobile e2e:mobile",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +25,21 @@
     "@playwright/test": "^1.61.1",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "^24.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
     "turbo": "2.10.1",
     "typescript": "6.0.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md}": [
+      "prettier --write"
+    ],
+    "apps/backend/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix --config apps/backend/eslint.config.mjs"
+    ],
+    "packages/**/*.{ts,tsx,js,jsx}": [
+      "sh -c 'echo \"No package ESLint config configured; skipping.\"'"
+    ]
   }
 }

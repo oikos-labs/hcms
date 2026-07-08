@@ -26,4 +26,11 @@ describe('PrismaService', () => {
       'Missing DATABASE_URL. Set DATABASE_URL in your environment before starting the app.',
     );
   });
+
+  it('allows DATABASE_URL to be omitted in test mode', () => {
+    delete process.env.DATABASE_URL;
+    process.env.NODE_ENV = 'test';
+
+    expect(() => new PrismaService()).not.toThrow();
+  });
 });

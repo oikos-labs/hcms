@@ -11,7 +11,7 @@ export class PrismaService
   constructor() {
     const connectionString =
       process.env.DATABASE_URL ??
-      (process.env.NODE_ENV === 'development'
+      (process.env.NODE_ENV === 'test'
         ? 'postgresql://postgres:postgres@localhost:5432/hcms?schema=public'
         : undefined);
 

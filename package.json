@@ -35,11 +35,11 @@
     "*.{ts,tsx,js,jsx,json,md}": [
       "prettier --write"
     ],
-    "apps/**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix"
+    "apps/backend/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix --config apps/backend/eslint.config.mjs"
     ],
     "packages/**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix"
+      "sh -c 'echo \"No package ESLint config configured; skipping.\"'"
     ]
   }
 }

@@ -1,1 +1,13 @@
-pnpm lint && pnpm typecheck
+#!/bin/sh
+
+echo "🔧 Running pnpm run format..."
+pnpm exec lint-staged
+RESULT=$?
+
+if [ $RESULT -ne 0 ]; then
+  echo "❌ Format failed. Commit aborted."
+  exit 1
+fi
+
+echo "✅ Format passed. Commit allowed."
+exit 0

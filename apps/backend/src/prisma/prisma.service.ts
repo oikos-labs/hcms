@@ -11,7 +11,15 @@ export class PrismaService
   constructor() {
     const connectionString =
       process.env.DATABASE_URL ??
-      'postgresql://postgres:postgres@localhost:5432/hcms?schema=public';
+      (process.env.NODE_ENV === 'development'
+        ? 'postgresql://postgres:postgres@localhost:5432/hcms?schema=public'
+        : undefined);
+
+    if (!connectionString) {
+      throw new Error(
+        'Missing DATABASE_URL. Set DATABASE_URL in your environment before starting the app.',
+      );
+    }
 
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);

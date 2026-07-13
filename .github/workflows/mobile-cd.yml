@@ -1,0 +1,128 @@
+name: Mobile and Web CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "packages/api-types/**"
+      - "packages/tsconfig/**"
+      - ".dockerignore"
+      - ".github/workflows/mobile-cd.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  workflow_dispatch:
+    inputs:
+      build_native:
+        description: Build production iOS and Android binaries with EAS
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-production
+  cancel-in-progress: false
+
+env:
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  GAR_LOCATION: asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/hcms-registry/frontend
+  CLOUD_RUN_SERVICE: ${{ vars.MOBILE_CLOUD_RUN_SERVICE }}
+  EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
+
+jobs:
+  deploy-web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter mobile typecheck
+      - run: pnpm --filter mobile exec jest --runInBand
+
+      - name: Require production API URL
+        run: test -n "$EXPO_PUBLIC_API_URL"
+
+      - uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Configure Artifact Registry
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
+
+      - name: Build and push web image
+        env:
+          IMAGE: ${{ env.GAR_LOCATION }}:${{ github.sha }}
+        run: |
+          docker build \
+            --build-arg EXPO_PUBLIC_API_URL="$EXPO_PUBLIC_API_URL" \
+            -t "$IMAGE" \
+            -f apps/mobile/Dockerfile .
+          docker push "$IMAGE"
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          image: ${{ env.GAR_LOCATION }}:${{ github.sha }}
+          flags: >-
+            --allow-unauthenticated
+            --min-instances=0
+            --max-instances=10
+            --concurrency=80
+
+      - name: Show deployed URL
+        run: echo "${{ steps.deploy.outputs.url }}"
+
+  build-native:
+    if: github.event_name == 'workflow_dispatch' && inputs.build_native
+    needs: deploy-web
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: 20.5.1
+          packager: pnpm
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build production native apps
+        working-directory: apps/mobile
+        run: eas build --platform all --profile production --non-interactive

@@ -1,0 +1,51 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/backend/**"
+      - "packages/api-types/**"
+      - "packages/tsconfig/**"
+      - ".dockerignore"
+      - ".github/workflows/backend-ci.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter backend prisma:generate
+      - run: pnpm --filter backend exec eslint '{src,apps,libs}/**/*.ts'
+      - run: pnpm --filter backend typecheck
+      - run: pnpm --filter backend exec jest --runInBand
+      - run: pnpm --filter backend build
+
+      - name: Validate production images
+        run: |
+          docker build --target runner -f apps/backend/Dockerfile .
+          docker build --target migration -f apps/backend/Dockerfile .

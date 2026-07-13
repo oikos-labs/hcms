@@ -1,0 +1,111 @@
+name: Backend CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/backend/**"
+      - "packages/api-types/**"
+      - "packages/tsconfig/**"
+      - ".dockerignore"
+      - ".github/workflows/backend-cd.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: backend-production
+  cancel-in-progress: false
+
+env:
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  GAR_LOCATION: asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/hcms-registry/backend
+  CLOUD_SQL_INSTANCE: ${{ format('{0}:{1}', secrets.GCP_PROJECT_ID, vars.GCP_CLOUD_SQL_INSTANCE) }}
+  DATABASE_URL_SECRET: ${{ vars.GCP_DATABASE_URL_SECRET }}
+  CLOUD_RUN_SERVICE: ${{ vars.BACKEND_CLOUD_RUN_SERVICE }}
+  MIGRATION_JOB: ${{ vars.BACKEND_MIGRATION_JOB }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter backend prisma:generate
+      - run: pnpm --filter backend exec eslint '{src,apps,libs}/**/*.ts'
+      - run: pnpm --filter backend typecheck
+      - run: pnpm --filter backend exec jest --runInBand
+      - run: pnpm --filter backend build
+
+      - uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Configure Artifact Registry
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
+
+      - name: Build and push production images
+        env:
+          APP_IMAGE: ${{ env.GAR_LOCATION }}:${{ github.sha }}
+          MIGRATION_IMAGE: ${{ env.GAR_LOCATION }}:migration-${{ github.sha }}
+        run: |
+          docker build --target runner -t "$APP_IMAGE" -f apps/backend/Dockerfile .
+          docker build --target migration -t "$MIGRATION_IMAGE" -f apps/backend/Dockerfile .
+          docker push "$APP_IMAGE"
+          docker push "$MIGRATION_IMAGE"
+
+      - name: Apply database migrations
+        env:
+          MIGRATION_IMAGE: ${{ env.GAR_LOCATION }}:migration-${{ github.sha }}
+        run: |
+          gcloud run jobs deploy "$MIGRATION_JOB" \
+            --image="$MIGRATION_IMAGE" \
+            --region="$GCP_REGION" \
+            --set-cloudsql-instances="$CLOUD_SQL_INSTANCE" \
+            --set-secrets="DATABASE_URL=${DATABASE_URL_SECRET}:latest" \
+            --tasks=1 \
+            --max-retries=1 \
+            --execute-now \
+            --wait
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          image: ${{ env.GAR_LOCATION }}:${{ github.sha }}
+          env_vars: |
+            CORS_ORIGIN=${{ vars.BACKEND_CORS_ORIGIN }}
+          secrets: |
+            DATABASE_URL=${{ env.DATABASE_URL_SECRET }}:latest
+          flags: >-
+            --allow-unauthenticated
+            --min-instances=0
+            --max-instances=10
+            --concurrency=80
+            --set-cloudsql-instances=${{ env.CLOUD_SQL_INSTANCE }}
+
+      - name: Show deployed URL
+        run: echo "${{ steps.deploy.outputs.url }}"

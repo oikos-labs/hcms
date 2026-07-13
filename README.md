@@ -48,6 +48,7 @@ The current project pairs an Expo mobile app with a NestJS backend. It also incl
 
 ![NestJS](https://img.shields.io/badge/NestJS_11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 
 **Tooling And Tests**
 
@@ -110,10 +111,37 @@ apps/backend/src/app.module.ts
 
 ## Run Locally
 
+Prerequisites:
+
+- Node.js and pnpm
+- Docker with Docker Compose
+
 Install dependencies:
 
 ```bash
 pnpm install
+```
+
+Create the backend environment file:
+
+```bash
+cp apps/backend/.env.example apps/backend/.env
+```
+
+Start PostgreSQL in Docker:
+
+```bash
+pnpm db:up
+```
+
+This starts PostgreSQL 17 on `localhost:5432`, creates the `hcms` database, and
+stores its data in a named Docker volume. The default credentials match
+`apps/backend/.env.example`.
+
+Apply the Prisma migrations:
+
+```bash
+pnpm --filter backend prisma:migrate
 ```
 
 Run all development tasks through Turborepo:
@@ -134,6 +162,18 @@ Run only the backend:
 pnpm dev:backend
 ```
 
+Stop the database without deleting its data:
+
+```bash
+pnpm db:down
+```
+
+To delete all local database data and start with a clean database:
+
+```bash
+pnpm db:reset
+```
+
 <br />
 
 ## Useful Commands
@@ -142,6 +182,7 @@ pnpm dev:backend
 pnpm build
 pnpm lint
 pnpm typecheck
+pnpm db:logs
 ```
 
 Mobile app commands:
@@ -185,6 +226,70 @@ pnpm e2e:mobile
 ```
 
 Maestro requires a simulator or device with the app installed.
+
+<br />
+
+## Production Containers And Cloud Run
+
+The application has two independent production images. Build both images from
+the repository root so that pnpm workspace dependencies are available.
+
+Backend image:
+
+```bash
+docker build -f apps/backend/Dockerfile -t hcms-backend .
+```
+
+Configure `DATABASE_URL` and `CORS_ORIGIN` on the backend Cloud Run service.
+`CORS_ORIGIN` accepts a comma-separated list and should include the deployed
+mobile web service URL. Cloud Run supplies `PORT` automatically.
+
+Mobile web image:
+
+```bash
+docker build \
+  -f apps/mobile/Dockerfile \
+  --build-arg EXPO_PUBLIC_API_URL=https://YOUR-BACKEND-SERVICE.run.app \
+  -t hcms-mobile-web .
+```
+
+`EXPO_PUBLIC_API_URL` is embedded in the static JavaScript bundle, so rebuild the
+mobile image when the backend's public URL changes. The nginx container reads
+Cloud Run's `PORT` environment variable when it starts.
+
+The backend deployment workflows require these GitHub secrets:
+
+- `GCP_PROJECT_ID`
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_SERVICE_ACCOUNT`
+
+Set the required `BACKEND_CORS_ORIGIN` GitHub variable to the deployed mobile
+web URL. The workflows also accept `GCP_REGION`, `GCP_CLOUD_SQL_INSTANCE`,
+`GCP_DATABASE_URL_SECRET`, `BACKEND_CLOUD_RUN_SERVICE`, and
+`BACKEND_MIGRATION_JOB` variables; defaults are provided for the current Google
+Cloud resources.
+
+By default, Secret Manager must contain a secret named
+`hcms-production-database-url`. Its value must connect through the attached
+Cloud SQL Unix socket, for example:
+
+```text
+postgresql://USER:PASSWORD@localhost/hcms?host=/cloudsql/PROJECT:REGION:INSTANCE
+```
+
+The Cloud Run runtime identity needs Secret Manager Secret Accessor and Cloud
+SQL Client access. The CD workflow builds a separate migration image, executes
+it as a Cloud Run Job, and deploys the backend only after migrations succeed.
+
+For mobile and web deployment, set the `EXPO_PUBLIC_API_URL` GitHub production
+environment variable to the public backend Cloud Run URL. Automatic CD runs
+build and deploy only the Expo web container. To create native iOS and Android
+production builds, manually run the **Mobile and Web CD** workflow with
+`build_native` enabled.
+
+Native builds also require the `EXPO_TOKEN` GitHub secret and an
+`EXPO_PUBLIC_API_URL` variable in the EAS `production` environment for the Expo
+project. The production profile is defined in `apps/mobile/eas.json`.
 
 <br />
 

@@ -1,0 +1,49 @@
+name: Mobile CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "packages/api-types/**"
+      - "packages/tsconfig/**"
+      - ".dockerignore"
+      - ".github/workflows/mobile-ci.yml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter mobile typecheck
+      - run: pnpm --filter mobile exec jest --runInBand
+
+      - name: Validate Expo web production image
+        run: >-
+          docker build
+          --build-arg EXPO_PUBLIC_API_URL=https://api.example.com
+          -f apps/mobile/Dockerfile .

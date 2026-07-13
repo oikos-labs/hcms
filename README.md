@@ -134,7 +134,7 @@ Start PostgreSQL in Docker:
 pnpm db:up
 ```
 
-This starts PostgreSQL 17 on `localhost:5432`, creates the `hcms` database, and
+This starts PostgreSQL 18 on `localhost:5432`, creates the `hcms` database, and
 stores its data in a named Docker volume. The default credentials match
 `apps/backend/.env.example`.
 

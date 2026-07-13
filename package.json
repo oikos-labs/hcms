@@ -4,6 +4,13 @@
   "description": "House Church Management System",
   "main": "index.js",
   "scripts": {
+    "docker:up": "docker compose up -d --wait",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "db:up": "docker compose up -d --wait postgres",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f postgres",
+    "db:reset": "docker compose down -v && docker compose up -d --wait postgres",
     "dev": "turbo run dev",
     "dev:mobile": "turbo run dev --filter=mobile",
     "dev:backend": "turbo run dev --filter=backend",

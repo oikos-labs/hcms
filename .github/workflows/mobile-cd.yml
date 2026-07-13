@@ -22,7 +22,6 @@ on:
         default: false
 
 permissions:
-  id-token: write
   contents: read
 
 concurrency:
@@ -40,6 +39,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 

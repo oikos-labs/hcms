@@ -1,6 +1,6 @@
 name: Bug report
-about: Create a bug report to help us improve.
-title: Bug: 
+description: Create a bug report to help us improve.
+title: "Bug: "
 labels: [bug]
 assignees: []
 body:
@@ -14,6 +14,7 @@ body:
       label: Summary
       description: Provide a short description of the issue.
       placeholder: A clear and concise description of what went wrong.
+    validations:
       required: true
   - type: textarea
     id: steps
@@ -24,18 +25,21 @@ body:
         1. 
         2. 
         3. 
+    validations:
       required: true
   - type: textarea
     id: expected
     attributes:
       label: Expected Behavior
       description: What should happen?
+    validations:
       required: true
   - type: textarea
     id: actual
     attributes:
       label: Actual Behavior
       description: What happens instead?
+    validations:
       required: true
   - type: textarea
     id: additional

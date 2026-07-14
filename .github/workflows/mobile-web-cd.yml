@@ -1,4 +1,4 @@
-name: Mobile and Web CD
+name: Mobile Web CD
 
 on:
   push:
@@ -8,29 +8,23 @@ on:
       - "packages/api-types/**"
       - "packages/tsconfig/**"
       - ".dockerignore"
-      - ".github/workflows/mobile-cd.yml"
+      - ".github/workflows/mobile-web-cd.yml"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "turbo.json"
   workflow_dispatch:
-    inputs:
-      build_native:
-        description: Build production iOS and Android binaries with EAS
-        required: true
-        type: boolean
-        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: mobile-production
+  group: mobile-web-production
   cancel-in-progress: false
 
 env:
   GCP_REGION: ${{ vars.GCP_REGION }}
-  GAR_LOCATION: asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/hcms-registry/frontend
+  GAR_LOCATION: asia-northeast1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/hcms-registry/frontend
   CLOUD_RUN_SERVICE: ${{ vars.MOBILE_CLOUD_RUN_SERVICE }}
   EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
 
@@ -66,9 +60,9 @@ jobs:
 
       - uses: google-github-actions/auth@v3
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
       - uses: google-github-actions/setup-gcloud@v3
 
@@ -99,37 +93,3 @@ jobs:
 
       - name: Show deployed URL
         run: echo "${{ steps.deploy.outputs.url }}"
-
-  build-native:
-    if: >-
-      github.repository == 'oikos-labs/hcms' &&
-      github.ref == 'refs/heads/main' &&
-      github.event_name == 'workflow_dispatch' &&
-      inputs.build_native
-    needs: deploy-web
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
-    environment: production
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 10.20.0
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      - uses: expo/expo-github-action@v8
-        with:
-          eas-version: 20.5.1
-          packager: pnpm
-          token: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Build production native apps
-        working-directory: apps/mobile
-        run: eas build --platform all --profile production --non-interactive

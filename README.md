@@ -283,9 +283,9 @@ it as a Cloud Run Job, and deploys the backend only after migrations succeed.
 
 For mobile and web deployment, set the `EXPO_PUBLIC_API_URL` GitHub production
 environment variable to the public backend Cloud Run URL. Automatic CD runs
-build and deploy only the Expo web container. To create native iOS and Android
-production builds, manually run the **Mobile and Web CD** workflow with
-`build_native` enabled.
+build and deploy the Expo web container through the **Mobile Web CD** workflow.
+To create production native builds, manually run the **Mobile Native CD**
+workflow and select `all`, `ios`, or `android`.
 
 Native builds also require the `EXPO_TOKEN` GitHub secret and an
 `EXPO_PUBLIC_API_URL` variable in the EAS `production` environment for the Expo

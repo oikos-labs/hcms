@@ -1,0 +1,57 @@
+name: Mobile Native CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Native platform to build with EAS
+        required: true
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+        default: all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-native-production
+  cancel-in-progress: false
+
+jobs:
+  build-native:
+    if: >-
+      github.repository == 'oikos-labs/hcms' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    environment: production
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.20.0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: 21.0.0
+          packager: pnpm
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build production native app
+        working-directory: apps/mobile
+        env:
+          EAS_BUILD_PLATFORM: ${{ inputs.platform }}
+        run: >-
+          eas build --platform "$EAS_BUILD_PLATFORM" --profile production
+          --non-interactive

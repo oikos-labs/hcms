@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "mobile",
-    "slug": "mobile",
+    "slug": "hcms",
     "owner": "oikos-labs",
     "version": "1.0.0",
     "orientation": "portrait",

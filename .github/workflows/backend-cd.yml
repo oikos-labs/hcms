@@ -23,14 +23,6 @@ concurrency:
   group: backend-production
   cancel-in-progress: false
 
-env:
-  GCP_REGION: ${{ vars.GCP_REGION }}
-  GAR_LOCATION: asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/hcms-registry/backend
-  CLOUD_SQL_INSTANCE: ${{ format('{0}:{1}', secrets.GCP_PROJECT_ID, vars.GCP_CLOUD_SQL_INSTANCE) }}
-  DATABASE_URL_SECRET: ${{ vars.GCP_DATABASE_URL_SECRET }}
-  CLOUD_RUN_SERVICE: ${{ vars.BACKEND_CLOUD_RUN_SERVICE }}
-  MIGRATION_JOB: ${{ vars.BACKEND_MIGRATION_JOB }}
-
 jobs:
   deploy:
     if: >-
@@ -39,6 +31,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
+    env:
+      GCP_REGION: ${{ vars.GCP_REGION }}
+      GAR_LOCATION: asia-northeast1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/hcms-registry/backend
+      CLOUD_SQL_INSTANCE: ${{ format('{0}:{1}', vars.GCP_PROJECT_ID, vars.GCP_CLOUD_SQL_INSTANCE) }}
+      DATABASE_URL_SECRET: ${{ vars.GCP_DATABASE_URL_SECRET }}
+      CLOUD_RUN_SERVICE: ${{ vars.BACKEND_CLOUD_RUN_SERVICE }}
+      MIGRATION_JOB: ${{ vars.BACKEND_MIGRATION_JOB }}
     steps:
       - uses: actions/checkout@v6
 
@@ -60,9 +59,9 @@ jobs:
 
       - uses: google-github-actions/auth@v3
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
       - uses: google-github-actions/setup-gcloud@v3
 

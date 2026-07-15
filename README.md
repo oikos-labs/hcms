@@ -257,24 +257,23 @@ docker build \
 mobile image when the backend's public URL changes. The nginx container reads
 Cloud Run's `PORT` environment variable when it starts.
 
-The backend deployment workflows require these GitHub secrets:
+The backend and mobile web deployment workflows require these GitHub variables:
 
 - `GCP_PROJECT_ID`
 - `GCP_WORKLOAD_IDENTITY_PROVIDER`
 - `GCP_SERVICE_ACCOUNT`
 
 Set the required `BACKEND_CORS_ORIGIN` GitHub variable to the deployed mobile
-web URL. The workflows also accept `GCP_REGION`, `GCP_CLOUD_SQL_INSTANCE`,
+web URL. Configure `GCP_REGION`, `GCP_CLOUD_SQL_INSTANCE`,
 `GCP_DATABASE_URL_SECRET`, `BACKEND_CLOUD_RUN_SERVICE`, and
-`BACKEND_MIGRATION_JOB` variables; defaults are provided for the current Google
-Cloud resources.
+`BACKEND_MIGRATION_JOB` as GitHub variables for the target environment.
 
-By default, Secret Manager must contain a secret named
-`hcms-production-database-url`. Its value must connect through the attached
-Cloud SQL Unix socket, for example:
+Secret Manager must contain the database URL secret referenced by the
+`GCP_DATABASE_URL_SECRET` GitHub variable. Its value must connect through the
+attached Cloud SQL Unix socket, for example:
 
 ```text
-postgresql://USER:PASSWORD@localhost/hcms?host=/cloudsql/PROJECT:REGION:INSTANCE
+postgresql://USER:PASSWORD@localhost/DATABASE?host=/cloudsql/PROJECT:REGION:INSTANCE
 ```
 
 The Cloud Run runtime identity needs Secret Manager Secret Accessor and Cloud
@@ -283,9 +282,9 @@ it as a Cloud Run Job, and deploys the backend only after migrations succeed.
 
 For mobile and web deployment, set the `EXPO_PUBLIC_API_URL` GitHub production
 environment variable to the public backend Cloud Run URL. Automatic CD runs
-build and deploy only the Expo web container. To create native iOS and Android
-production builds, manually run the **Mobile and Web CD** workflow with
-`build_native` enabled.
+build and deploy the Expo web container through the **Mobile Web CD** workflow.
+To create production native builds, manually run the **Mobile Native CD**
+workflow and select `all`, `ios`, or `android`.
 
 Native builds also require the `EXPO_TOKEN` GitHub secret and an
 `EXPO_PUBLIC_API_URL` variable in the EAS `production` environment for the Expo

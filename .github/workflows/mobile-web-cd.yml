@@ -22,12 +22,6 @@ concurrency:
   group: mobile-web-production
   cancel-in-progress: false
 
-env:
-  GCP_REGION: ${{ vars.GCP_REGION }}
-  GAR_LOCATION: asia-northeast1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/hcms-registry/frontend
-  CLOUD_RUN_SERVICE: ${{ vars.MOBILE_CLOUD_RUN_SERVICE }}
-  EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
-
 jobs:
   deploy-web:
     if: >-
@@ -36,6 +30,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
+    env:
+      GCP_REGION: ${{ vars.GCP_REGION }}
+      GAR_LOCATION: asia-northeast1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/hcms-registry/frontend
+      CLOUD_RUN_SERVICE: ${{ vars.MOBILE_CLOUD_RUN_SERVICE }}
+      EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
     permissions:
       contents: read
       id-token: write

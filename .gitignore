@@ -79,3 +79,5 @@ out/
 
 # Misc
 *.local
+
+.tmp

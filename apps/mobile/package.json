@@ -8,6 +8,8 @@
     "@gluestack-ui/core": "^5.0.15",
     "@gluestack-ui/utils": "^5.0.6",
     "@legendapp/motion": "^2.5.3",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-vector-icons/ionicons": "^13.1.2",
     "@repo/api-types": "workspace:*",
     "expo": "~56.0.12",
     "expo-constants": "~56.0.18",

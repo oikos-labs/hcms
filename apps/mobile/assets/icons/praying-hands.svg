@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 512 512"
+     class="ionicon"
+     role="img"
+     aria-labelledby="title desc">
+  <title id="title">Overlapping filled hands</title>
+  <desc id="desc">A filled hand rotated 45 degrees clockwise with selected visible portions of a second filled hand behind it.</desc>
+
+  <defs>
+    <!-- Exact supplied filled-hand geometry. -->
+    <path id="hand-shape" d="M79.2 211.44c15.52-8.82 34.91-2.28 43.31 13.68l41.38 84.41a7 7 0 0 0 8.93 3.43 7 7 0 0 0 4.41-6.52V72c0-13.91 12.85-24 26.77-24s26 10.09 26 24v156.64A11.24 11.24 0 0 0 240.79 240 11 11 0 0 0 252 229V24c0-13.91 10.94-24 24.86-24S302 10.09 302 24v204.64A11.24 11.24 0 0 0 312.79 240 11 11 0 0 0 324 229V56c0-13.91 12.08-24 26-24s26 11.09 26 25v187.64A11.24 11.24 0 0 0 386.79 256 11 11 0 0 0 398 245V120c0-13.91 11.08-24 25-24s25.12 10.22 25 24v216c0 117.41-72 176-160 176h-16c-88 0-115.71-39.6-136-88L67.33 255c-6.66-18-3.64-34.75 11.87-43.56"/>
+
+    <!-- Rear hand placement from the finalized outline reference. -->
+    <g id="rear-hand" transform="translate(-10 0) scale(.9)">
+      <g transform="rotate(45 256 256)">
+        <use href="#hand-shape" xlink:href="#hand-shape"/>
+      </g>
+    </g>
+
+    <!-- Front hand placement from the finalized outline reference. -->
+    <g id="front-hand" transform="translate(28 24) scale(.9)">
+      <g transform="rotate(45 256 256)">
+        <use href="#hand-shape" xlink:href="#hand-shape"/>
+      </g>
+    </g>
+
+    <!--
+      The rear hand is masked to the same two visible regions used by the
+      finalized outline version: the outer wrist/thumb-side sweep and one
+      upper finger section. The wide mask strokes turn those contours into
+      solid filled portions instead of outline strokes.
+    -->
+    <mask id="rear-visible-mask"
+          maskUnits="userSpaceOnUse"
+          maskContentUnits="userSpaceOnUse"
+          x="-64" y="-64" width="640" height="640"
+          style="mask-type:alpha">
+      <g transform="translate(-10 0) scale(.9)">
+        <g transform="rotate(45 256 256)"
+           fill="none"
+           stroke="white"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+          <path d="M196.5986 478.6836C165.6943 462.6125 148.1036 436.872 136 408L83.33 264C76.67 245.95 79.69 229.21 95.2 220.4"
+                stroke-width="72"/>
+          <path d="M177.7939 85.4364A32 32 0 0 0 176 96V188.5313"
+                stroke-width="72"/>
+        </g>
+      </g>
+    </mask>
+  </defs>
+
+  <!-- Visible portions of the rear filled hand. -->
+  <use href="#rear-hand"
+       xlink:href="#rear-hand"
+       fill="currentColor"
+       mask="url(#rear-visible-mask)"/>
+
+  <!-- Front hand: exact supplied filled geometry. -->
+  <use href="#front-hand"
+       xlink:href="#front-hand"
+       fill="currentColor"/>
+</svg>

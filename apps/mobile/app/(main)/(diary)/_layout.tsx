@@ -1,0 +1,240 @@
+import { Ionicons } from "@react-native-vector-icons/ionicons";
+import { Tabs, useNavigation } from "expo-router";
+import { Image, Pressable, type ColorValue } from "react-native";
+import { SvgUri } from "react-native-svg";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { useMainTabHistory } from "@/context/MainTabHistoryContext";
+
+const HEADING = "#031A17";
+const NEUTRAL_GRAY = "#3A4D4B";
+const BORDER_DEFAULT = "rgba(3, 26, 23, 0.1)";
+const ICON_SIZE = 22;
+const TAB_BAR_HEIGHT = 60;
+const BACK_BUTTON_SIZE = 44;
+const BACK_BUTTON_INSET = (TAB_BAR_HEIGHT - BACK_BUTTON_SIZE) / 2;
+const BACK_BUTTON_RESERVED_WIDTH = BACK_BUTTON_SIZE + BACK_BUTTON_INSET * 2;
+const prayerOutlineAsset = require("../../../assets/icons/praying-hands-outline.svg");
+const prayerFilledAsset = require("../../../assets/icons/praying-hands.svg");
+
+type PrayerIconProps = {
+  color: ColorValue;
+  focused: boolean;
+};
+
+function PrayerIcon({ color, focused }: PrayerIconProps) {
+  const prayerAsset = focused ? prayerFilledAsset : prayerOutlineAsset;
+  const prayerUri = Image.resolveAssetSource(prayerAsset).uri;
+
+  return (
+    <SvgUri
+      color={color}
+      width={ICON_SIZE}
+      height={ICON_SIZE}
+      uri={prayerUri}
+    />
+  );
+}
+
+export default function DiaryTabsLayout() {
+  const mainTabsNavigation = useNavigation("/(main)");
+  const insets = useSafeAreaInsets();
+  const { getPreviousMainTab } = useMainTabHistory();
+
+  return (
+    <Tabs
+      initialRouteName="index"
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: HEADING,
+        tabBarInactiveTintColor: HEADING,
+        tabBarHideOnKeyboard: true,
+        tabBarButton: (props) => (
+          <Pressable
+            accessibilityLargeContentTitle={
+              props.accessibilityLargeContentTitle
+            }
+            accessibilityShowsLargeContentViewer={
+              props.accessibilityShowsLargeContentViewer
+            }
+            aria-label={props["aria-label"]}
+            aria-selected={props["aria-selected"]}
+            android_ripple={props.android_ripple}
+            disabled={props.disabled}
+            onLongPress={props.onLongPress}
+            onPress={(event) => props.onPress?.(event)}
+            role={props.role}
+            style={({ pressed }) => [
+              props.style,
+              {
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+              },
+              pressed && { opacity: 0.7 },
+            ]}
+            testID={props.testID}
+          >
+            {props.children}
+          </Pressable>
+        ),
+        tabBarLabelStyle: {
+          fontFamily: "Pretendard",
+          fontSize: 11,
+          fontWeight: "500",
+          includeFontPadding: false,
+          lineHeight: 13,
+        },
+        tabBarLabelPosition: "below-icon",
+        tabBarIconStyle: {
+          height: ICON_SIZE,
+          marginBottom: 2,
+          width: ICON_SIZE,
+        },
+        tabBarStyle: {
+          bottom: Math.max(insets.bottom, 16),
+          height: TAB_BAR_HEIGHT,
+          width: "95%",
+          marginHorizontal: "2.5%",
+          paddingBottom: 0,
+          paddingTop: 0,
+          position: "absolute",
+          backgroundColor: "#FFFFFF",
+          borderRadius: 999,
+          borderWidth: 1,
+          borderColor: BORDER_DEFAULT,
+          elevation: 8,
+          shadowColor: HEADING,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.14,
+          shadowRadius: 8,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="back_action"
+        listeners={{
+          tabPress: (event) => {
+            event.preventDefault();
+            mainTabsNavigation.navigate(getPreviousMainTab() as never);
+          },
+        }}
+        options={{
+          tabBarAccessibilityLabel: "메인 탭으로 돌아가기",
+          tabBarButton: (props) => (
+            <Pressable
+              accessibilityLargeContentTitle={
+                props.accessibilityLargeContentTitle
+              }
+              accessibilityShowsLargeContentViewer={
+                props.accessibilityShowsLargeContentViewer
+              }
+              aria-label={props["aria-label"]}
+              aria-selected={props["aria-selected"]}
+              android_ripple={props.android_ripple}
+              disabled={props.disabled}
+              onLongPress={props.onLongPress}
+              onPress={(event) => props.onPress?.(event)}
+              role={props.role}
+              style={({ pressed }) => [
+                props.style,
+                {
+                  alignItems: "center",
+                  backgroundColor: "rgba(3, 26, 23, 0.05)",
+                  borderRadius: BACK_BUTTON_SIZE / 2,
+                  flex: 0,
+                  height: BACK_BUTTON_SIZE,
+                  justifyContent: "center",
+                  padding: 0,
+                  width: BACK_BUTTON_SIZE,
+                },
+                pressed && { opacity: 0.7 },
+              ]}
+              testID={props.testID}
+            >
+              {props.children}
+            </Pressable>
+          ),
+          tabBarIconStyle: {
+            height: ICON_SIZE,
+            marginBottom: 0,
+            width: ICON_SIZE,
+          },
+          tabBarIcon: () => (
+            <Ionicons
+              color={NEUTRAL_GRAY}
+              name="arrow-back-outline"
+              size={ICON_SIZE}
+            />
+          ),
+          tabBarItemStyle: {
+            alignItems: "center",
+            height: BACK_BUTTON_SIZE,
+            justifyContent: "center",
+            left: BACK_BUTTON_INSET,
+            position: "absolute",
+            top: BACK_BUTTON_INSET,
+            width: BACK_BUTTON_SIZE,
+            zIndex: 1,
+          },
+          tabBarLabel: () => null,
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          tabBarAccessibilityLabel: "일기",
+          tabBarItemStyle: {
+            marginLeft: BACK_BUTTON_RESERVED_WIDTH,
+          },
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              color={color}
+              name={focused ? "book" : "book-outline"}
+              size={ICON_SIZE}
+            />
+          ),
+          title: "일기",
+        }}
+      />
+      <Tabs.Screen
+        name="review"
+        options={{
+          tabBarAccessibilityLabel: "검토",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              color={color}
+              name={focused ? "file-tray-full" : "file-tray-full-outline"}
+              size={ICON_SIZE}
+            />
+          ),
+          title: "검토",
+        }}
+      />
+      <Tabs.Screen
+        name="prayer"
+        options={{
+          tabBarAccessibilityLabel: "기도",
+          tabBarIcon: ({ color, focused }) => (
+            <PrayerIcon color={color} focused={focused} />
+          ),
+          title: "기도",
+        }}
+      />
+      <Tabs.Screen
+        name="mission"
+        options={{
+          tabBarAccessibilityLabel: "선교",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              color={color}
+              name={focused ? "earth" : "earth-outline"}
+              size={ICON_SIZE}
+            />
+          ),
+          title: "선교",
+        }}
+      />
+    </Tabs>
+  );
+}

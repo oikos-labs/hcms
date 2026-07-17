@@ -120,8 +120,6 @@ function DiaryTabs() {
                 props.style,
                 {
                   alignItems: "center",
-                  backgroundColor: "rgba(3, 26, 23, 0.05)",
-                  borderRadius: BACK_BUTTON_SIZE / 2,
                   flex: 0,
                   height: BACK_BUTTON_SIZE,
                   justifyContent: "center",
@@ -149,6 +147,8 @@ function DiaryTabs() {
           ),
           tabBarItemStyle: {
             alignItems: "center",
+            backgroundColor: "rgba(3, 26, 23, 0.05)",
+            borderRadius: BACK_BUTTON_SIZE / 2,
             height: BACK_BUTTON_SIZE,
             justifyContent: "center",
             left: BACK_BUTTON_INSET,

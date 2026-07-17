@@ -1,10 +1,11 @@
 import { Ionicons } from "@react-native-vector-icons/ionicons";
-import { Tabs, useNavigation } from "expo-router";
-import { Image, Pressable, type ColorValue } from "react-native";
-import { SvgUri } from "react-native-svg";
+import { Stack, Tabs, useNavigation } from "expo-router";
+import { Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { PrayerIcon } from "@/components/navigation/PrayerIcon";
 import { useMainTabHistory } from "@/context/MainTabHistoryContext";
+import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
 const HEADING = "#031A17";
 const NEUTRAL_GRAY = "#3A4D4B";
@@ -14,29 +15,8 @@ const TAB_BAR_HEIGHT = 60;
 const BACK_BUTTON_SIZE = 44;
 const BACK_BUTTON_INSET = (TAB_BAR_HEIGHT - BACK_BUTTON_SIZE) / 2;
 const BACK_BUTTON_RESERVED_WIDTH = BACK_BUTTON_SIZE + BACK_BUTTON_INSET * 2;
-const prayerOutlineAsset = require("../../../assets/icons/praying-hands-outline.svg");
-const prayerFilledAsset = require("../../../assets/icons/praying-hands.svg");
 
-type PrayerIconProps = {
-  color: ColorValue;
-  focused: boolean;
-};
-
-function PrayerIcon({ color, focused }: PrayerIconProps) {
-  const prayerAsset = focused ? prayerFilledAsset : prayerOutlineAsset;
-  const prayerUri = Image.resolveAssetSource(prayerAsset).uri;
-
-  return (
-    <SvgUri
-      color={color}
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      uri={prayerUri}
-    />
-  );
-}
-
-export default function DiaryTabsLayout() {
+function DiaryTabs() {
   const mainTabsNavigation = useNavigation("/(main)");
   const insets = useSafeAreaInsets();
   const { getPreviousMainTab } = useMainTabHistory();
@@ -216,7 +196,7 @@ export default function DiaryTabsLayout() {
         options={{
           tabBarAccessibilityLabel: "기도",
           tabBarIcon: ({ color, focused }) => (
-            <PrayerIcon color={color} focused={focused} />
+            <PrayerIcon color={color} focused={focused} size={ICON_SIZE} />
           ),
           title: "기도",
         }}
@@ -237,4 +217,27 @@ export default function DiaryTabsLayout() {
       />
     </Tabs>
   );
+}
+
+function DiaryStack() {
+  return (
+    <Stack
+      initialRouteName="index"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="back_action" />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="review" />
+      <Stack.Screen name="prayer" />
+      <Stack.Screen name="mission" />
+    </Stack>
+  );
+}
+
+export default function DiaryLayout() {
+  const { usesSidebar } = useResponsiveLayout();
+
+  return usesSidebar ? <DiaryStack /> : <DiaryTabs />;
 }

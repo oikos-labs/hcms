@@ -1,16 +1,22 @@
 import { useNavigation } from "expo-router";
 import { useEffect } from "react";
-import { BackHandler, ScrollView, Text } from "react-native";
+import { BackHandler, Platform, ScrollView, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useMainTabHistory } from "@/context/MainTabHistoryContext";
+import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
 export default function DiaryScreen() {
   const mainTabsNavigation = useNavigation("/(main)");
   const { getPreviousMainTab } = useMainTabHistory();
   const insets = useSafeAreaInsets();
+  const { usesSidebar } = useResponsiveLayout();
 
   useEffect(() => {
+    if (Platform.OS !== "android") {
+      return;
+    }
+
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
@@ -26,7 +32,7 @@ export default function DiaryScreen() {
     <ScrollView
       className="flex-1 bg-background"
       contentContainerStyle={{
-        paddingBottom: 76 + Math.max(insets.bottom, 16),
+        paddingBottom: usesSidebar ? 32 : 76 + Math.max(insets.bottom, 16),
         paddingHorizontal: 16,
         paddingTop: Math.max(insets.top, 16) + 16,
       }}

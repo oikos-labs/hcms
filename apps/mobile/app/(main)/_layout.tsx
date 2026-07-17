@@ -2,18 +2,71 @@ import {
   Ionicons,
   type IoniconsIconName,
 } from "@react-native-vector-icons/ionicons";
-import { Tabs } from "expo-router";
-import { Pressable, type ColorValue } from "react-native";
+import { Tabs, useRouter, useSegments } from "expo-router";
+import {
+  Drawer,
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+  type DrawerContentComponentProps,
+} from "expo-router/drawer";
+import { Platform, Pressable, type ColorValue } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { PrayerIcon } from "@/components/navigation/PrayerIcon";
 import {
   MainTabHistoryProvider,
   useMainTabHistory,
 } from "@/context/MainTabHistoryContext";
+import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
 const HEADING = "#031A17";
 const BORDER_DEFAULT = "rgba(3, 26, 23, 0.1)";
 const ICON_SIZE = 22;
+const DRAWER_WIDTH = 240;
+
+type DiaryRouteName = "index" | "review" | "prayer" | "mission";
+
+type DiaryDrawerItem = {
+  activeIcon?: IoniconsIconName;
+  href:
+    | "/(main)/(diary)"
+    | "/(main)/(diary)/review"
+    | "/(main)/(diary)/prayer"
+    | "/(main)/(diary)/mission";
+  inactiveIcon?: IoniconsIconName;
+  label: string;
+  route: DiaryRouteName;
+};
+
+const DIARY_DRAWER_ITEMS: DiaryDrawerItem[] = [
+  {
+    activeIcon: "book",
+    href: "/(main)/(diary)",
+    inactiveIcon: "book-outline",
+    label: "일기",
+    route: "index",
+  },
+  {
+    activeIcon: "file-tray-full",
+    href: "/(main)/(diary)/review",
+    inactiveIcon: "file-tray-full-outline",
+    label: "검토",
+    route: "review",
+  },
+  {
+    href: "/(main)/(diary)/prayer",
+    label: "기도",
+    route: "prayer",
+  },
+  {
+    activeIcon: "earth",
+    href: "/(main)/(diary)/mission",
+    inactiveIcon: "earth-outline",
+    label: "선교",
+    route: "mission",
+  },
+];
 
 type TabIconProps = {
   active: IoniconsIconName;
@@ -26,6 +79,115 @@ type TabIconProps = {
 function TabIcon({ active, color, focused, inactive, size }: TabIconProps) {
   return (
     <Ionicons color={color} name={focused ? active : inactive} size={size} />
+  );
+}
+
+function DiaryDrawerIcon({
+  color,
+  focused,
+  item,
+}: {
+  color: ColorValue;
+  focused: boolean;
+  item: DiaryDrawerItem;
+}) {
+  if (item.route === "prayer") {
+    return <PrayerIcon color={color} focused={focused} size={ICON_SIZE} />;
+  }
+
+  return (
+    <Ionicons
+      color={color}
+      name={focused ? item.activeIcon! : item.inactiveIcon!}
+      size={ICON_SIZE}
+    />
+  );
+}
+
+function MainDrawerContent(props: DrawerContentComponentProps) {
+  const { getPreviousMainTab } = useMainTabHistory();
+  const { usesCollapsibleSidebar } = useResponsiveLayout();
+  const router = useRouter();
+  const segments = useSegments();
+  const focusedMainRoute = props.state.routes[props.state.index]?.name;
+  const isDiaryRoute = focusedMainRoute === "(diary)";
+  const lastSegment = segments[segments.length - 1] as string | undefined;
+  const focusedDiaryRoute: DiaryRouteName =
+    lastSegment === "review" ||
+    lastSegment === "prayer" ||
+    lastSegment === "mission"
+      ? lastSegment
+      : "index";
+
+  const closeCollapsibleDrawer = () => {
+    if (usesCollapsibleSidebar) {
+      props.navigation.closeDrawer();
+    }
+  };
+
+  if (!isDiaryRoute) {
+    return (
+      <DrawerContentScrollView {...props}>
+        <DrawerItemList {...props} />
+      </DrawerContentScrollView>
+    );
+  }
+
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItem
+        icon={({ color }) => (
+          <Ionicons color={color} name="arrow-back-outline" size={ICON_SIZE} />
+        )}
+        inactiveTintColor={HEADING}
+        label="뒤로"
+        labelStyle={{
+          fontFamily: "Pretendard",
+          fontSize: 14,
+          fontWeight: "500",
+        }}
+        onPress={() => {
+          props.navigation.navigate(getPreviousMainTab() as never);
+          closeCollapsibleDrawer();
+        }}
+        style={{
+          borderRadius: 12,
+          marginHorizontal: 12,
+          marginVertical: 4,
+        }}
+      />
+      {DIARY_DRAWER_ITEMS.map((item) => {
+        const focused = focusedDiaryRoute === item.route;
+
+        return (
+          <DrawerItem
+            activeBackgroundColor="rgba(18, 133, 117, 0.12)"
+            activeTintColor={HEADING}
+            focused={focused}
+            icon={({ color }) => (
+              <DiaryDrawerIcon color={color} focused={focused} item={item} />
+            )}
+            inactiveTintColor={HEADING}
+            key={item.route}
+            label={item.label}
+            labelStyle={{
+              fontFamily: "Pretendard",
+              fontSize: 14,
+              fontWeight: "500",
+            }}
+            onPress={() => {
+              router.navigate(item.href);
+              closeCollapsibleDrawer();
+            }}
+            style={{
+              borderRadius: 12,
+              marginHorizontal: 12,
+              marginVertical: 4,
+            }}
+          />
+        );
+      })}
+    </DrawerContentScrollView>
   );
 }
 
@@ -202,10 +364,159 @@ function MainTabs() {
   );
 }
 
+function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
+  const { rememberMainTab } = useMainTabHistory();
+
+  return (
+    <Drawer
+      backBehavior="history"
+      drawerContent={(props) => <MainDrawerContent {...props} />}
+      initialRouteName="index"
+      screenOptions={{
+        drawerActiveBackgroundColor: "rgba(18, 133, 117, 0.12)",
+        drawerActiveTintColor: HEADING,
+        drawerContentContainerStyle: {
+          paddingTop: 24,
+        },
+        drawerInactiveTintColor: HEADING,
+        drawerItemStyle: {
+          borderRadius: 12,
+          marginHorizontal: 12,
+          marginVertical: 4,
+        },
+        drawerLabelStyle: {
+          fontFamily: "Pretendard",
+          fontSize: 14,
+          fontWeight: "500",
+        },
+        drawerStyle: {
+          backgroundColor: "#FFFFFF",
+          borderRightColor: BORDER_DEFAULT,
+          borderRightWidth: 1,
+          width: DRAWER_WIDTH,
+        },
+        drawerType: isPermanent ? "permanent" : "front",
+        headerShown: !isPermanent,
+        headerStyle: {
+          backgroundColor: "#FFFFFF",
+        },
+        headerTintColor: HEADING,
+        sceneStyle: {
+          backgroundColor: "#EFF4F8",
+        },
+        swipeEnabled: !isPermanent,
+      }}
+    >
+      <Drawer.Screen
+        name="index"
+        listeners={{
+          focus: () => rememberMainTab("index"),
+        }}
+        options={{
+          drawerIcon: ({ color, focused }) => (
+            <TabIcon
+              active="home"
+              color={color}
+              focused={focused}
+              inactive="home-outline"
+              size={ICON_SIZE}
+            />
+          ),
+          drawerLabel: "홈",
+          title: "홈",
+        }}
+      />
+      <Drawer.Screen
+        name="(diary)"
+        options={{
+          drawerIcon: ({ color, focused }) => (
+            <TabIcon
+              active="book"
+              color={color}
+              focused={focused}
+              inactive="book-outline"
+              size={ICON_SIZE}
+            />
+          ),
+          drawerLabel: "일기",
+          title: "일기",
+        }}
+      />
+      <Drawer.Screen
+        name="mokwon"
+        listeners={{
+          focus: () => rememberMainTab("mokwon"),
+        }}
+        options={{
+          drawerIcon: ({ color, focused }) => (
+            <TabIcon
+              active="people"
+              color={color}
+              focused={focused}
+              inactive="people-outline"
+              size={ICON_SIZE}
+            />
+          ),
+          drawerLabel: "목원",
+          title: "목원",
+        }}
+      />
+      <Drawer.Screen
+        name="nanum"
+        listeners={{
+          focus: () => rememberMainTab("nanum"),
+        }}
+        options={{
+          drawerIcon: ({ color, focused }) => (
+            <TabIcon
+              active="chatbubble"
+              color={color}
+              focused={focused}
+              inactive="chatbubble-outline"
+              size={ICON_SIZE}
+            />
+          ),
+          drawerLabel: "나눔",
+          title: "나눔",
+        }}
+      />
+      <Drawer.Screen
+        name="menu"
+        listeners={{
+          focus: () => rememberMainTab("menu"),
+        }}
+        options={{
+          drawerIcon: ({ color, focused }) => (
+            <TabIcon
+              active="menu"
+              color={color}
+              focused={focused}
+              inactive="menu-outline"
+              size={ICON_SIZE}
+            />
+          ),
+          drawerLabel: "전체",
+          title: "전체",
+        }}
+      />
+    </Drawer>
+  );
+}
+
+function ResponsiveMainNavigator() {
+  const { isMobile, usesPermanentSidebar } = useResponsiveLayout();
+
+  return isMobile ? (
+    <MainTabs />
+  ) : (
+    <MainDrawer isPermanent={usesPermanentSidebar} />
+  );
+}
+
 export default function MainTabsLayout() {
   return (
     <MainTabHistoryProvider>
-      <MainTabs />
+      <ResponsiveMainNavigator />
     </MainTabHistoryProvider>
   );
 }

@@ -194,6 +194,8 @@ function MainDrawerContent(props: DrawerContentComponentProps) {
 function MainTabs() {
   const insets = useSafeAreaInsets();
   const { rememberMainTab } = useMainTabHistory();
+  const { isMobile } = useResponsiveLayout();
+  const isMobileWeb = Platform.OS === "web" && isMobile;
 
   return (
     <Tabs
@@ -253,17 +255,17 @@ function MainTabs() {
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
           elevation: 12,
-          height: 48 + insets.bottom,
-          paddingBottom: Math.max(insets.bottom, 8),
           paddingTop: 8,
+          paddingBottom: Math.max(insets.bottom, 8),
           shadowColor: HEADING,
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.04,
           shadowRadius: 10,
+          ...(isMobileWeb && { height: 54 + insets.bottom }),
         },
         tabBarItemStyle: {
-          justifyContent: "center",
           alignItems: "center",
+          justifyContent: "center",
         },
       }}
     >

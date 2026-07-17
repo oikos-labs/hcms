@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink"
      viewBox="0 0 512 512"
-     role="img">
-  <title>Overlapping filled hands</title>
-  <desc>A filled hand rotated 45 degrees clockwise with selected visible portions of a second filled hand behind it.</desc>
+     class="ionicon"
+     role="img"
+     aria-labelledby="title desc">
+  <title id="title">Overlapping filled hands</title>
+  <desc id="desc">A filled hand rotated 45 degrees clockwise with selected visible portions of a second filled hand behind it.</desc>
 
   <defs>
     <!-- Exact supplied filled-hand geometry. -->
@@ -23,6 +25,12 @@
       </g>
     </g>
 
+    <!--
+      The rear hand is masked to the same two visible regions used by the
+      finalized outline version: the outer wrist/thumb-side sweep and one
+      upper finger section. The wide mask strokes turn those contours into
+      solid filled portions instead of outline strokes.
+    -->
     <mask id="rear-visible-mask"
           maskUnits="userSpaceOnUse"
           maskContentUnits="userSpaceOnUse"

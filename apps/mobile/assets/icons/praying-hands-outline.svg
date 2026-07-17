@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="ionicon" role="img" aria-labelledby="title desc">
-  <title id="title">Overlapping hands</title>
-  <desc id="desc">Two overlapping hand outlines using the supplied Ionicon hand geometry.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img">
+  <title>Overlapping hands</title>
+  <desc>Two overlapping hand outlines using the supplied Ionicon hand geometry.</desc>
   <defs>
     <path id="finger-right" d="M432 320V144a32 32 0 0 0-32-32h0a32 32 0 0 0-32 32v112"/>
     <path id="finger-mid-right" d="M368 256V80a32 32 0 0 0-32-32h0a32 32 0 0 0-32 32v160"/>

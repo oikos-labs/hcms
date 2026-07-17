@@ -12,6 +12,7 @@
     "@react-native-vector-icons/ionicons": "^13.1.2",
     "@repo/api-types": "workspace:*",
     "expo": "~56.0.12",
+    "expo-asset": "~56.0.17",
     "expo-constants": "~56.0.18",
     "expo-dev-client": "~56.0.22",
     "expo-linear-gradient": "~56.0.4",

@@ -8,9 +8,12 @@ import {
 } from "react";
 
 export type MainTabRoute = "index" | "mokwon" | "nanum" | "menu";
+export type DiaryTabRoute = "index" | "review" | "prayer" | "mission";
 
 type MainTabHistoryContextValue = {
+  getLastDiaryTab: () => DiaryTabRoute;
   getPreviousMainTab: () => MainTabRoute;
+  rememberDiaryTab: (route: DiaryTabRoute) => void;
   rememberMainTab: (route: MainTabRoute) => void;
 };
 
@@ -19,17 +22,28 @@ const MainTabHistoryContext = createContext<
 >(undefined);
 
 export function MainTabHistoryProvider({ children }: PropsWithChildren) {
+  const lastDiaryTabRef = useRef<DiaryTabRoute>("index");
   const previousMainTabRef = useRef<MainTabRoute>("index");
+
+  const rememberDiaryTab = useCallback((route: DiaryTabRoute) => {
+    lastDiaryTabRef.current = route;
+  }, []);
 
   const rememberMainTab = useCallback((route: MainTabRoute) => {
     previousMainTabRef.current = route;
   }, []);
 
+  const getLastDiaryTab = useCallback(() => lastDiaryTabRef.current, []);
   const getPreviousMainTab = useCallback(() => previousMainTabRef.current, []);
 
   const value = useMemo(
-    () => ({ getPreviousMainTab, rememberMainTab }),
-    [getPreviousMainTab, rememberMainTab],
+    () => ({
+      getLastDiaryTab,
+      getPreviousMainTab,
+      rememberDiaryTab,
+      rememberMainTab,
+    }),
+    [getLastDiaryTab, getPreviousMainTab, rememberDiaryTab, rememberMainTab],
   );
 
   return (

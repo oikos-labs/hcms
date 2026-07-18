@@ -11,7 +11,8 @@ import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
 function DiaryTabs() {
   const mainTabsNavigation = useNavigation("/(main)");
-  const { getPreviousMainTab } = useMainTabHistory();
+  const { getLastDiaryTab, getPreviousMainTab, rememberDiaryTab } =
+    useMainTabHistory();
   const navigationTokenStyle = useResolveClassNames(
     "size-icon-nav text-text-heading",
   );
@@ -48,7 +49,7 @@ function DiaryTabs() {
 
   return (
     <Tabs
-      initialRouteName="index"
+      initialRouteName={getLastDiaryTab()}
       tabBar={(props) => (
         <>
           <LinearGradient colors={gradientColors} style={gradientStyle} />
@@ -135,6 +136,9 @@ function DiaryTabs() {
       />
       <Tabs.Screen
         name="index"
+        listeners={{
+          focus: () => rememberDiaryTab("index"),
+        }}
         options={{
           headerTitle: "목회일기",
           tabBarAccessibilityLabel: "일기",
@@ -151,6 +155,9 @@ function DiaryTabs() {
       />
       <Tabs.Screen
         name="review"
+        listeners={{
+          focus: () => rememberDiaryTab("review"),
+        }}
         options={{
           headerTitle: "목회일기 검토",
           tabBarAccessibilityLabel: "검토",
@@ -166,6 +173,9 @@ function DiaryTabs() {
       />
       <Tabs.Screen
         name="prayer"
+        listeners={{
+          focus: () => rememberDiaryTab("prayer"),
+        }}
         options={{
           headerTitle: "기도제목",
           tabBarAccessibilityLabel: "기도",
@@ -177,6 +187,9 @@ function DiaryTabs() {
       />
       <Tabs.Screen
         name="mission"
+        listeners={{
+          focus: () => rememberDiaryTab("mission"),
+        }}
         options={{
           headerTitle: "선교관리",
           tabBarAccessibilityLabel: "선교",
@@ -195,18 +208,32 @@ function DiaryTabs() {
 }
 
 function DiaryStack() {
+  const { getLastDiaryTab, rememberDiaryTab } = useMainTabHistory();
+
   return (
     <Stack
-      initialRouteName="index"
+      initialRouteName={getLastDiaryTab()}
       screenOptions={{
         headerShown: false,
       }}
     >
       <Stack.Screen name="back_action" />
-      <Stack.Screen name="index" />
-      <Stack.Screen name="review" />
-      <Stack.Screen name="prayer" />
-      <Stack.Screen name="mission" />
+      <Stack.Screen
+        listeners={{ focus: () => rememberDiaryTab("index") }}
+        name="index"
+      />
+      <Stack.Screen
+        listeners={{ focus: () => rememberDiaryTab("review") }}
+        name="review"
+      />
+      <Stack.Screen
+        listeners={{ focus: () => rememberDiaryTab("prayer") }}
+        name="prayer"
+      />
+      <Stack.Screen
+        listeners={{ focus: () => rememberDiaryTab("mission") }}
+        name="mission"
+      />
     </Stack>
   );
 }

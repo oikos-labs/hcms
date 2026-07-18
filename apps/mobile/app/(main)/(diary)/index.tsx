@@ -36,6 +36,7 @@ export default function DiaryScreen() {
         paddingHorizontal: 16,
         paddingTop: 16,
       }}
+      testID="diary-index-screen"
     >
       <Text className="font-brand-regular text-display text-text-heading">
         일기 Lorem Ipsum is simply dummy text of the printing and typesetting

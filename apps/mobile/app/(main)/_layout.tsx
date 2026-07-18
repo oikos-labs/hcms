@@ -264,6 +264,7 @@ function MainTabs() {
         options={{
           headerTitle: "HCMS",
           tabBarAccessibilityLabel: "홈",
+          tabBarButtonTestID: "main-tab-home",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               active="home"
@@ -281,6 +282,7 @@ function MainTabs() {
         options={{
           headerShown: false,
           tabBarAccessibilityLabel: "일기",
+          tabBarButtonTestID: "main-tab-diary",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               active="book"
@@ -301,6 +303,7 @@ function MainTabs() {
         options={{
           headerTitle: "목원관리",
           tabBarAccessibilityLabel: "목원",
+          tabBarButtonTestID: "main-tab-mokwon",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               active="people"
@@ -321,6 +324,7 @@ function MainTabs() {
         options={{
           headerTitle: "목장나눔터",
           tabBarAccessibilityLabel: "나눔",
+          tabBarButtonTestID: "main-tab-nanum",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               active="chatbubble"
@@ -340,6 +344,7 @@ function MainTabs() {
         }}
         options={{
           tabBarAccessibilityLabel: "전체",
+          tabBarButtonTestID: "main-tab-menu",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               active="menu"

@@ -102,6 +102,7 @@ function DiaryTabs() {
         }}
         options={{
           tabBarAccessibilityLabel: "메인 탭으로 돌아가기",
+          tabBarButtonTestID: "diary-tab-back",
           tabBarButton: (props) => (
             <Pressable
               accessibilityLargeContentTitle={
@@ -142,6 +143,7 @@ function DiaryTabs() {
         options={{
           headerTitle: "목회일기",
           tabBarAccessibilityLabel: "일기",
+          tabBarButtonTestID: "diary-tab-index",
           tabBarItemStyle: [tabBarItemStyle, diaryTabBarItemStyle],
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
@@ -161,6 +163,7 @@ function DiaryTabs() {
         options={{
           headerTitle: "목회일기 검토",
           tabBarAccessibilityLabel: "검토",
+          tabBarButtonTestID: "diary-tab-review",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               color={color}
@@ -179,6 +182,7 @@ function DiaryTabs() {
         options={{
           headerTitle: "기도제목",
           tabBarAccessibilityLabel: "기도",
+          tabBarButtonTestID: "diary-tab-prayer",
           tabBarIcon: ({ color, focused }) => (
             <PrayerIcon color={color} focused={focused} size={iconSize} />
           ),
@@ -193,6 +197,7 @@ function DiaryTabs() {
         options={{
           headerTitle: "선교관리",
           tabBarAccessibilityLabel: "선교",
+          tabBarButtonTestID: "diary-tab-mission",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               color={color}

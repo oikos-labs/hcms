@@ -46,3 +46,21 @@ eas build --profile production --platform all
 ```
 
 Smoke-test the final production build through TestFlight and the Google Play testing track before submitting it for public release. Development and production builds are separate artifacts; routine code changes do not require rebuilding both.
+
+## Navigation tests
+
+Run unit tests for responsive routing decisions and main-tab history:
+
+```sh
+pnpm --filter mobile test
+```
+
+With a development build running on an emulator or device, run the Maestro flows:
+
+```sh
+pnpm --filter mobile e2e:mobile
+```
+
+The diary flow checks the nested tab layout, every diary destination, restoration of the last diary tab, the diary back control, restoration of the previously selected main tab, and Android system Back behavior. Android's button and edge-swipe navigation both reach React Native through the same system Back event; keep one physical edge-swipe smoke test in the release-device checklist as gesture-mode configuration belongs to the device rather than Maestro.
+
+The flow deliberately preserves app data because clearing an Expo development build also clears its remembered Metro server URL. Connect the development build to Metro once before running Maestro; route state itself is reset when the JavaScript app launches.

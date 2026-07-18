@@ -1,6 +1,8 @@
 import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { Stack, Tabs, useNavigation } from "expo-router";
-import { Pressable } from "react-native";
+import { Pressable, View, StyleSheet } from "react-native";
+import { BottomTabBar } from "expo-router/js-tabs";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useResolveClassNames } from "uniwind";
 
@@ -38,6 +40,27 @@ function DiaryTabs() {
   return (
     <Tabs
       initialRouteName="index"
+      tabBar={(props) => (
+        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+          <LinearGradient
+            colors={[
+              "rgba(245, 245, 245, 0.1)",
+              "rgba(245, 245, 245, 0.8)",
+              "rgba(245, 245, 245, 0.95)",
+            ]}
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 60 + Math.max(insets.bottom, 16),
+            }}
+            pointerEvents="none"
+          />
+
+          <BottomTabBar {...props} />
+        </View>
+      )}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: HEADING,

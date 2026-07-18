@@ -206,12 +206,13 @@ function MainTabs() {
   const headerTitleStyle = useResolveClassNames(
     "font-brand-bold text-xl text-text-heading",
   );
+  const headerStyle = useResolveClassNames("bg-surface-header");
   const tabBarLabelStyle = useResolveClassNames("font-brand-medium text-label");
   const tabBarIconStyle = useResolveClassNames("mb-0.5 size-icon-nav");
   const tabBarStyle = useResolveClassNames(
     isMobileWeb
-      ? "h-[calc(54px+env(safe-area-inset-bottom))] rounded-t-3xl border border-border-default bg-static-white pb-safe-or-2 pt-2 shadow-main-tab"
-      : "rounded-t-3xl border border-border-default bg-static-white pb-safe-or-2 pt-2 shadow-[0_-2px_10px_rgba(3,26,23,0.04)]",
+      ? "h-[calc(54px+env(safe-area-inset-bottom))] rounded-t-3xl border border-border-default bg-card pb-safe-or-2 pt-2 shadow-main-tab"
+      : "rounded-t-3xl border border-border-default bg-card pb-safe-or-2 pt-2 shadow-main-tab",
   );
   const tabBarItemStyle = useResolveClassNames("items-center justify-center");
   const hiddenTabBarStyle = useResolveClassNames("hidden");
@@ -222,6 +223,7 @@ function MainTabs() {
       initialRouteName="index"
       screenOptions={{
         headerShown: true,
+        headerStyle,
         headerTitleAlign: "left",
         headerTitleStyle: [headerTitleStyle, { includeFontPadding: false }],
         tabBarActiveTintColor: headingColor,
@@ -362,9 +364,9 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
   const drawerItemStyle = useResolveClassNames("mx-3 my-1 rounded-xl");
   const drawerLabelStyle = useResolveClassNames("font-brand-medium text-sm");
   const drawerStyle = useResolveClassNames(
-    "w-[240px] border-r border-border-default bg-static-white",
+    "w-[240px] border-r border-border-default bg-card",
   );
-  const headerStyle = useResolveClassNames("bg-static-white");
+  const headerStyle = useResolveClassNames("bg-surface-header");
   const sceneStyle = useResolveClassNames("bg-background");
 
   return (

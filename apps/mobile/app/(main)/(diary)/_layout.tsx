@@ -3,7 +3,7 @@ import { Stack, Tabs, useNavigation } from "expo-router";
 import { Pressable, type ColorValue } from "react-native";
 import { BottomTabBar } from "expo-router/js-tabs";
 import { LinearGradient } from "expo-linear-gradient";
-import { useResolveClassNames } from "uniwind";
+import { useCSSVariable, useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
 import { useMainTabHistory } from "@/context/MainTabHistoryContext";
@@ -22,13 +22,14 @@ function DiaryTabs() {
   const headerTitleStyle = useResolveClassNames(
     "font-brand-bold text-xl text-text-heading",
   );
+  const headerStyle = useResolveClassNames("bg-surface-header");
   const tabBarLabelStyle = useResolveClassNames("font-brand-medium text-label");
   const tabBarIconStyle = useResolveClassNames("mb-0.5 size-icon-nav");
   const tabBarItemStyle = useResolveClassNames(
     "h-[60px] items-center justify-center py-0",
   );
   const tabBarStyle = useResolveClassNames(
-    "absolute bottom-safe-or-4 mx-[2.5%] h-[60px] w-[95%] rounded-full border border-border-default bg-static-white py-0 shadow-diary-tab",
+    "absolute bottom-safe-or-4 mx-[2.5%] h-[60px] w-[95%] rounded-full border border-border-default bg-card py-0 shadow-diary-tab",
   );
   const gradientStyle = useResolveClassNames(
     "pointer-events-none absolute inset-x-0 bottom-0 h-[calc(60px+max(env(safe-area-inset-bottom),16px))]",
@@ -38,27 +39,26 @@ function DiaryTabs() {
     "absolute left-2 top-2 z-[1] size-11 items-center justify-center rounded-full bg-fill-neutral-weak",
   );
   const diaryTabBarItemStyle = useResolveClassNames("ml-[60px]");
+  const gradientColors = useCSSVariable([
+    "--navigation-gradient-start",
+    "--navigation-gradient-middle",
+    "--navigation-gradient-strong",
+    "--navigation-gradient-end",
+  ]) as [ColorValue, ColorValue, ColorValue, ColorValue];
 
   return (
     <Tabs
       initialRouteName="index"
       tabBar={(props) => (
         <>
-          <LinearGradient
-            colors={[
-              "rgba(239, 244, 248, 0.1)",
-              "rgba(239, 244, 248, 0.3)",
-              "rgba(245, 245, 245, 0.8)",
-              "rgba(245, 245, 245, 0.9)",
-            ]}
-            style={gradientStyle}
-          />
+          <LinearGradient colors={gradientColors} style={gradientStyle} />
 
           <BottomTabBar {...props} />
         </>
       )}
       screenOptions={{
         headerShown: true,
+        headerStyle,
         headerTitleAlign: "left",
         headerTitleStyle: [headerTitleStyle, { includeFontPadding: false }],
         tabBarActiveTintColor: headingColor,

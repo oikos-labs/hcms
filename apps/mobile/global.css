@@ -2,9 +2,10 @@
 @import "uniwind";
 
 /*
- * Figma variables from Color.json. Values with an alpha channel keep it in
- * the CSS color token. Gluestack's core tokens remain opaque RGB channels so
- * utilities such as bg-primary/50 can apply their own opacity modifier.
+ * Figma variables from Color.json. Mode-aware semantic tokens store complete
+ * rgb() colors so native transforms do not evaluate slash alpha as division.
+ * Gluestack core and opaque palette tokens remain RGB channels so utilities
+ * such as bg-primary/50 can apply their own opacity modifier.
  */
 @layer theme {
   :root {
@@ -42,47 +43,47 @@
       --brand-800: 7 55 50;
       --brand-900: 4 34 32;
       --brand-950: 2 21 18;
-      --brand-opacity-12: 18 133 117 / 0.12;
-      --brand-opacity-18: 18 133 117 / 0.2;
-      --brand-opacity-22: 93 154 112 / 0.12;
+      --brand-opacity-12: rgb(18 133 117 / 0.12);
+      --brand-opacity-18: rgb(18 133 117 / 0.2);
+      --brand-opacity-22: rgb(93 154 112 / 0.12);
       --static-white: 255 255 255;
       --static-black: 0 0 0;
       --slate-600: 58 77 75;
 
       /* exact semantic colors */
-      --fill-brand-strong: 14 106 94;
-      --fill-brand-weak: 18 133 117 / 0.12;
-      --fill-brand-wash: 18 133 117 / 0.2;
-      --fill-neutral-weak: 3 26 23 / 0.05;
-      --fill-neutral-hover: 3 26 23 / 0.08;
-      --fill-neutral-active: 3 26 23 / 0.12;
-      --fill-neutral: 7 55 50;
-      --surface-subtle: 249 253 249;
-      --surface-muted: 12 31 21 / 0.04;
-      --surface-hover: 12 31 21 / 0.04;
-      --surface-row-hover: 247 251 252;
-      --surface-header: 239 244 248 / 0.9;
-      --surface-input: 239 244 248;
-      --surface-tab: 3 26 23 / 0.05;
-      --surface-code: 2 21 18;
-      --surface-error: 253 245 244;
-      --text-heading: 3 26 23;
-      --text-primary: 3 26 23 / 0.8;
-      --text-secondary: 3 26 23 / 0.58;
-      --text-tertiary: 3 26 23 / 0.4;
-      --text-disabled: 3 26 23 / 0.25;
-      --text-on-brand: 255 255 255;
-      --text-code: 10 80 72;
-      --text-link: 10 80 72;
-      --icon-default: 58 77 75;
-      --icon-brand: 18 133 117;
-      --border-default: 3 26 23 / 0.1;
-      --border-subtle: 3 26 23 / 0.06;
-      --border-strong: 3 26 23 / 0.2;
-      --border-brand: 18 133 117;
-      --border-input: 3 26 23 / 0.14;
-      --border-row: 3 26 23 / 0.05;
-      --border-error: 192 57 43;
+      --fill-brand-strong: rgb(14 106 94);
+      --fill-brand-weak: rgb(18 133 117 / 0.12);
+      --fill-brand-wash: rgb(18 133 117 / 0.2);
+      --fill-neutral-weak: rgb(3 26 23 / 0.05);
+      --fill-neutral-hover: rgb(3 26 23 / 0.08);
+      --fill-neutral-active: rgb(3 26 23 / 0.12);
+      --fill-neutral: rgb(7 55 50);
+      --surface-subtle: rgb(249 253 249);
+      --surface-muted: rgb(12 31 21 / 0.04);
+      --surface-hover: rgb(12 31 21 / 0.04);
+      --surface-row-hover: rgb(247 251 252);
+      --surface-header: rgb(239 244 248 / 0.9);
+      --surface-input: rgb(239 244 248);
+      --surface-tab: rgb(3 26 23 / 0.05);
+      --surface-code: rgb(2 21 18);
+      --surface-error: rgb(253 245 244);
+      --text-heading: rgb(3 26 23);
+      --text-primary: rgb(3 26 23 / 0.8);
+      --text-secondary: rgb(3 26 23 / 0.58);
+      --text-tertiary: rgb(3 26 23 / 0.4);
+      --text-disabled: rgb(3 26 23 / 0.25);
+      --text-on-brand: rgb(255 255 255);
+      --text-code: rgb(10 80 72);
+      --text-link: rgb(10 80 72);
+      --icon-default: rgb(58 77 75);
+      --icon-brand: rgb(18 133 117);
+      --border-default: rgb(3 26 23 / 0.1);
+      --border-subtle: rgb(3 26 23 / 0.06);
+      --border-strong: rgb(3 26 23 / 0.2);
+      --border-brand: rgb(18 133 117);
+      --border-input: rgb(3 26 23 / 0.14);
+      --border-row: rgb(3 26 23 / 0.05);
+      --border-error: rgb(192 57 43);
     }
 
     @variant dark {
@@ -119,47 +120,47 @@
       --brand-800: 161 228 219;
       --brand-900: 208 242 238;
       --brand-950: 237 250 248;
-      --brand-opacity-12: 18 133 117 / 0.22;
-      --brand-opacity-18: 18 133 117 / 0.2;
-      --brand-opacity-22: 93 154 112 / 0.22;
+      --brand-opacity-12: rgb(18 133 117 / 0.22);
+      --brand-opacity-18: rgb(18 133 117 / 0.2);
+      --brand-opacity-22: rgb(93 154 112 / 0.22);
       --static-white: 255 255 255;
       --static-black: 0 0 0;
       --slate-600: 95 204 192;
 
       /* exact semantic colors */
-      --fill-brand-strong: 42 170 156;
-      --fill-brand-weak: 18 133 117 / 0.22;
-      --fill-brand-wash: 18 133 117 / 0.2;
-      --fill-neutral-weak: 237 250 248 / 0.05;
-      --fill-neutral-hover: 237 250 248 / 0.08;
-      --fill-neutral-active: 237 250 248 / 0.12;
-      --fill-neutral: 161 228 219;
-      --surface-subtle: 30 53 38;
-      --surface-muted: 237 250 248 / 0.06;
-      --surface-hover: 243 248 245 / 0.04;
-      --surface-row-hover: 4 34 32;
-      --surface-header: 2 21 18 / 0.9;
-      --surface-input: 30 53 38;
-      --surface-tab: 237 250 248 / 0.08;
-      --surface-code: 2 21 18;
-      --surface-error: 31 18 16;
-      --text-heading: 237 250 248 / 0.95;
-      --text-primary: 243 248 245 / 0.88;
-      --text-secondary: 237 250 248 / 0.6;
-      --text-tertiary: 243 248 245 / 0.38;
-      --text-disabled: 243 248 245 / 0.22;
-      --text-on-brand: 255 255 255;
-      --text-code: 95 204 192 / 0.85;
-      --text-link: 95 204 192;
-      --icon-default: 95 204 192;
-      --icon-brand: 18 133 117;
-      --border-default: 237 250 248 / 0.1;
-      --border-subtle: 237 250 248 / 0.06;
-      --border-strong: 237 250 248 / 0.2;
-      --border-brand: 18 133 117;
-      --border-input: 237 250 248 / 0.14;
-      --border-row: 237 250 248 / 0.05;
-      --border-error: 192 57 43;
+      --fill-brand-strong: rgb(42 170 156);
+      --fill-brand-weak: rgb(18 133 117 / 0.22);
+      --fill-brand-wash: rgb(18 133 117 / 0.2);
+      --fill-neutral-weak: rgb(237 250 248 / 0.05);
+      --fill-neutral-hover: rgb(237 250 248 / 0.08);
+      --fill-neutral-active: rgb(237 250 248 / 0.12);
+      --fill-neutral: rgb(161 228 219);
+      --surface-subtle: rgb(30 53 38);
+      --surface-muted: rgb(237 250 248 / 0.06);
+      --surface-hover: rgb(243 248 245 / 0.04);
+      --surface-row-hover: rgb(4 34 32);
+      --surface-header: rgb(2 21 18 / 0.9);
+      --surface-input: rgb(30 53 38);
+      --surface-tab: rgb(237 250 248 / 0.08);
+      --surface-code: rgb(2 21 18);
+      --surface-error: rgb(31 18 16);
+      --text-heading: rgb(237 250 248 / 0.95);
+      --text-primary: rgb(243 248 245 / 0.88);
+      --text-secondary: rgb(237 250 248 / 0.6);
+      --text-tertiary: rgb(243 248 245 / 0.38);
+      --text-disabled: rgb(243 248 245 / 0.22);
+      --text-on-brand: rgb(255 255 255);
+      --text-code: rgb(95 204 192 / 0.85);
+      --text-link: rgb(95 204 192);
+      --icon-default: rgb(95 204 192);
+      --icon-brand: rgb(18 133 117);
+      --border-default: rgb(237 250 248 / 0.1);
+      --border-subtle: rgb(237 250 248 / 0.06);
+      --border-strong: rgb(237 250 248 / 0.2);
+      --border-brand: rgb(18 133 117);
+      --border-input: rgb(237 250 248 / 0.14);
+      --border-row: rgb(237 250 248 / 0.05);
+      --border-error: rgb(192 57 43);
     }
   }
 }
@@ -198,47 +199,47 @@
   --color-brand-800: rgb(var(--brand-800));
   --color-brand-900: rgb(var(--brand-900));
   --color-brand-950: rgb(var(--brand-950));
-  --color-brand-opacity-12: rgb(var(--brand-opacity-12));
-  --color-brand-opacity-18: rgb(var(--brand-opacity-18));
-  --color-brand-opacity-22: rgb(var(--brand-opacity-22));
+  --color-brand-opacity-12: var(--brand-opacity-12);
+  --color-brand-opacity-18: var(--brand-opacity-18);
+  --color-brand-opacity-22: var(--brand-opacity-22);
   --color-static-white: rgb(var(--static-white));
   --color-static-black: rgb(var(--static-black));
   --color-slate-600: rgb(var(--slate-600));
 
   /* exact Figma semantic utilities */
-  --color-fill-brand-strong: rgb(var(--fill-brand-strong));
-  --color-fill-brand-weak: rgb(var(--fill-brand-weak));
-  --color-fill-brand-wash: rgb(var(--fill-brand-wash));
-  --color-fill-neutral-weak: rgb(var(--fill-neutral-weak));
-  --color-fill-neutral-hover: rgb(var(--fill-neutral-hover));
-  --color-fill-neutral-active: rgb(var(--fill-neutral-active));
-  --color-fill-neutral: rgb(var(--fill-neutral));
-  --color-surface-subtle: rgb(var(--surface-subtle));
-  --color-surface-muted: rgb(var(--surface-muted));
-  --color-surface-hover: rgb(var(--surface-hover));
-  --color-surface-row-hover: rgb(var(--surface-row-hover));
-  --color-surface-header: rgb(var(--surface-header));
-  --color-surface-input: rgb(var(--surface-input));
-  --color-surface-tab: rgb(var(--surface-tab));
-  --color-surface-code: rgb(var(--surface-code));
-  --color-surface-error: rgb(var(--surface-error));
-  --color-text-heading: rgb(var(--text-heading));
-  --color-text-primary: rgb(var(--text-primary));
-  --color-text-secondary: rgb(var(--text-secondary));
-  --color-text-tertiary: rgb(var(--text-tertiary));
-  --color-text-disabled: rgb(var(--text-disabled));
-  --color-text-on-brand: rgb(var(--text-on-brand));
-  --color-text-code: rgb(var(--text-code));
-  --color-text-link: rgb(var(--text-link));
-  --color-icon-default: rgb(var(--icon-default));
-  --color-icon-brand: rgb(var(--icon-brand));
-  --color-border-default: rgb(var(--border-default));
-  --color-border-subtle: rgb(var(--border-subtle));
-  --color-border-strong: rgb(var(--border-strong));
-  --color-border-brand: rgb(var(--border-brand));
-  --color-border-input: rgb(var(--border-input));
-  --color-border-row: rgb(var(--border-row));
-  --color-border-error: rgb(var(--border-error));
+  --color-fill-brand-strong: var(--fill-brand-strong);
+  --color-fill-brand-weak: var(--fill-brand-weak);
+  --color-fill-brand-wash: var(--fill-brand-wash);
+  --color-fill-neutral-weak: var(--fill-neutral-weak);
+  --color-fill-neutral-hover: var(--fill-neutral-hover);
+  --color-fill-neutral-active: var(--fill-neutral-active);
+  --color-fill-neutral: var(--fill-neutral);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-row-hover: var(--surface-row-hover);
+  --color-surface-header: var(--surface-header);
+  --color-surface-input: var(--surface-input);
+  --color-surface-tab: var(--surface-tab);
+  --color-surface-code: var(--surface-code);
+  --color-surface-error: var(--surface-error);
+  --color-text-heading: var(--text-heading);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-on-brand: var(--text-on-brand);
+  --color-text-code: var(--text-code);
+  --color-text-link: var(--text-link);
+  --color-icon-default: var(--icon-default);
+  --color-icon-brand: var(--icon-brand);
+  --color-border-default: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-border-brand: var(--border-brand);
+  --color-border-input: var(--border-input);
+  --color-border-row: var(--border-row);
+  --color-border-error: var(--border-error);
 
   /* typography */
   --font-brand: "Pretendard-Regular", sans-serif;

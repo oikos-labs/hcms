@@ -92,7 +92,7 @@
       --primary-foreground: 255 255 255;
       --secondary: 30 53 38;
       --secondary-foreground: 237 250 248;
-      --background: 2 21 18;
+      --background: 11 16 20;
       --foreground: 237 250 248;
       --card: 3 26 23;
       --card-foreground: 237 250 248;
@@ -242,23 +242,30 @@
   --color-border-error: var(--border-error);
 
   /* typography */
-  --font-brand: "Pretendard-Regular", sans-serif;
-  --font-brand-medium: "Pretendard-Medium", sans-serif;
-  --font-brand-semibold: "Pretendard-SemiBold", sans-serif;
-  --font-brand-bold: "Pretendard-Bold", sans-serif;
-  --font-mono: "SF Mono", monospace;
+  --font-brand: "Pretendard-Regular";
+  --font-brand-regular: "Pretendard-Regular";
+  --font-brand-medium: "Pretendard-Medium";
+  --font-brand-semibold: "Pretendard-SemiBold";
+  --font-brand-bold: "Pretendard-Bold";
+  --font-mono: "SF Mono";
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --text-display: 17px;
+  --text-display--line-height: 24px;
   --text-body: 15px;
+  --text-body--line-height: 22px;
   --text-body--font-weight: 500;
   --text-caption: 13px;
+  --text-caption--line-height: 18px;
   --text-caption--font-weight: 400;
   --text-label: 11px;
+  --text-label--line-height: 13px;
   --text-micro: 10px;
+  --text-micro--line-height: 12px;
   --text-tag: 9px;
+  --text-tag--line-height: 11px;
 
   /* base and semantic spacing */
   --spacing-xxs: 4px;
@@ -314,6 +321,10 @@
   --spacing-input-height-compact: 40px;
   --spacing-icon-nav: 22px;
   --spacing-icon-swatch: 18px;
+  --spacing-icon-button: 20px;
+  --spacing-icon-button-lg: 20px;
+  --spacing-icon-button-sm: 14px;
+  --spacing-icon-button-xs: 12px;
   --spacing-swatch-box: 40px;
   --spacing-logo-mark: 28px;
   --spacing-device-width: 390px;
@@ -329,4 +340,8 @@
   --default-transition-duration: 150ms;
   --duration-copy-feedback: 1400ms;
   --scale-pressed: 0.98;
+
+  /* shadow tokens */
+  --shadow-diary-tab: 0 4px 8px rgb(3 26 23 / 0.14);
+  --shadow-main-tab: 0 -2px 10px rgb(3 26 23 / 0.04);
 }

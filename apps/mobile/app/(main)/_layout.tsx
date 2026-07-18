@@ -11,7 +11,6 @@ import {
   type DrawerContentComponentProps,
 } from "expo-router/drawer";
 import { Platform, Pressable, type ColorValue } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
@@ -20,9 +19,6 @@ import {
   useMainTabHistory,
 } from "@/context/MainTabHistoryContext";
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
-
-const HEADING = "#031A17";
-const ICON_SIZE = 22;
 
 type DiaryRouteName = "index" | "review" | "prayer" | "mission";
 
@@ -67,6 +63,19 @@ const DIARY_DRAWER_ITEMS: DiaryDrawerItem[] = [
   },
 ];
 
+function useNavigationTokens() {
+  const colorStyle = useResolveClassNames(
+    "bg-fill-brand-weak text-text-heading",
+  );
+  const iconStyle = useResolveClassNames("size-icon-nav");
+
+  return {
+    activeBackgroundColor: colorStyle.backgroundColor as ColorValue,
+    headingColor: colorStyle.color as ColorValue,
+    iconSize: iconStyle.width as number,
+  };
+}
+
 type TabIconProps = {
   active: IoniconsIconName;
   color: ColorValue;
@@ -85,25 +94,29 @@ function DiaryDrawerIcon({
   color,
   focused,
   item,
+  size,
 }: {
   color: ColorValue;
   focused: boolean;
   item: DiaryDrawerItem;
+  size: number;
 }) {
   if (item.route === "prayer") {
-    return <PrayerIcon color={color} focused={focused} size={ICON_SIZE} />;
+    return <PrayerIcon color={color} focused={focused} size={size} />;
   }
 
   return (
     <Ionicons
       color={color}
       name={focused ? item.activeIcon! : item.inactiveIcon!}
-      size={ICON_SIZE}
+      size={size}
     />
   );
 }
 
 function MainDrawerContent(props: DrawerContentComponentProps) {
+  const { activeBackgroundColor, headingColor, iconSize } =
+    useNavigationTokens();
   const { getPreviousMainTab } = useMainTabHistory();
   const { usesCollapsibleSidebar } = useResponsiveLayout();
   const router = useRouter();
@@ -140,9 +153,9 @@ function MainDrawerContent(props: DrawerContentComponentProps) {
     <DrawerContentScrollView {...props}>
       <DrawerItem
         icon={({ color }) => (
-          <Ionicons color={color} name="arrow-back-outline" size={ICON_SIZE} />
+          <Ionicons color={color} name="arrow-back-outline" size={iconSize} />
         )}
-        inactiveTintColor={HEADING}
+        inactiveTintColor={headingColor}
         label="뒤로"
         labelStyle={drawerItemLabelStyle}
         onPress={() => {
@@ -156,13 +169,18 @@ function MainDrawerContent(props: DrawerContentComponentProps) {
 
         return (
           <DrawerItem
-            activeBackgroundColor="rgba(18, 133, 117, 0.12)"
-            activeTintColor={HEADING}
+            activeBackgroundColor={activeBackgroundColor}
+            activeTintColor={headingColor}
             focused={focused}
             icon={({ color }) => (
-              <DiaryDrawerIcon color={color} focused={focused} item={item} />
+              <DiaryDrawerIcon
+                color={color}
+                focused={focused}
+                item={item}
+                size={iconSize}
+              />
             )}
-            inactiveTintColor={HEADING}
+            inactiveTintColor={headingColor}
             key={item.route}
             label={item.label}
             labelStyle={drawerItemLabelStyle}
@@ -179,18 +197,21 @@ function MainDrawerContent(props: DrawerContentComponentProps) {
 }
 
 function MainTabs() {
-  const insets = useSafeAreaInsets();
+  const { headingColor, iconSize } = useNavigationTokens();
   const { rememberMainTab } = useMainTabHistory();
   const { isMobile } = useResponsiveLayout();
   const segments = useSegments();
   const isMobileWeb = Platform.OS === "web" && isMobile;
   const isDiaryRoute = segments.some((segment) => segment === "(diary)");
-  const tabBarLabelStyle = useResolveClassNames(
-    "font-brand-medium text-[11px] leading-[13px]",
+  const headerTitleStyle = useResolveClassNames(
+    "font-brand-bold text-xl text-text-heading",
   );
-  const tabBarIconStyle = useResolveClassNames("mb-0.5 size-[22px]");
+  const tabBarLabelStyle = useResolveClassNames("font-brand-medium text-label");
+  const tabBarIconStyle = useResolveClassNames("mb-0.5 size-icon-nav");
   const tabBarStyle = useResolveClassNames(
-    "rounded-t-3xl border border-[rgba(3,26,23,0.1)] bg-white pt-2",
+    isMobileWeb
+      ? "h-[calc(54px+env(safe-area-inset-bottom))] rounded-t-3xl border border-border-default bg-static-white pb-safe-or-2 pt-2 shadow-main-tab"
+      : "rounded-t-3xl border border-border-default bg-static-white pb-safe-or-2 pt-2 shadow-[0_-2px_10px_rgba(3,26,23,0.04)]",
   );
   const tabBarItemStyle = useResolveClassNames("items-center justify-center");
   const hiddenTabBarStyle = useResolveClassNames("hidden");
@@ -200,9 +221,11 @@ function MainTabs() {
       backBehavior="history"
       initialRouteName="index"
       screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: HEADING,
-        tabBarInactiveTintColor: HEADING,
+        headerShown: true,
+        headerTitleAlign: "left",
+        headerTitleStyle: [headerTitleStyle, { includeFontPadding: false }],
+        tabBarActiveTintColor: headingColor,
+        tabBarInactiveTintColor: headingColor,
         tabBarHideOnKeyboard: true,
         tabBarButton: (props) => (
           <Pressable
@@ -227,20 +250,7 @@ function MainTabs() {
         tabBarLabelStyle: [tabBarLabelStyle, { includeFontPadding: false }],
         tabBarLabelPosition: "below-icon",
         tabBarIconStyle,
-        tabBarStyle: isDiaryRoute
-          ? hiddenTabBarStyle
-          : [
-              tabBarStyle,
-              {
-                elevation: 12,
-                paddingBottom: Math.max(insets.bottom, 8),
-                shadowColor: HEADING,
-                shadowOffset: { width: 0, height: -2 },
-                shadowOpacity: 0.04,
-                shadowRadius: 10,
-                ...(isMobileWeb && { height: 54 + insets.bottom }),
-              },
-            ],
+        tabBarStyle: isDiaryRoute ? hiddenTabBarStyle : tabBarStyle,
         tabBarItemStyle,
       }}
     >
@@ -250,6 +260,7 @@ function MainTabs() {
           focus: () => rememberMainTab("index"),
         }}
         options={{
+          headerTitle: "HCMS",
           tabBarAccessibilityLabel: "홈",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
@@ -257,7 +268,7 @@ function MainTabs() {
               color={color}
               focused={focused}
               inactive="home-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           title: "홈",
@@ -266,6 +277,7 @@ function MainTabs() {
       <Tabs.Screen
         name="(diary)"
         options={{
+          headerShown: false,
           tabBarAccessibilityLabel: "일기",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
@@ -273,7 +285,7 @@ function MainTabs() {
               color={color}
               focused={focused}
               inactive="book-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           title: "일기",
@@ -285,6 +297,7 @@ function MainTabs() {
           focus: () => rememberMainTab("mokwon"),
         }}
         options={{
+          headerTitle: "목원관리",
           tabBarAccessibilityLabel: "목원",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
@@ -292,7 +305,7 @@ function MainTabs() {
               color={color}
               focused={focused}
               inactive="people-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           title: "목원",
@@ -304,6 +317,7 @@ function MainTabs() {
           focus: () => rememberMainTab("nanum"),
         }}
         options={{
+          headerTitle: "목장나눔터",
           tabBarAccessibilityLabel: "나눔",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
@@ -311,7 +325,7 @@ function MainTabs() {
               color={color}
               focused={focused}
               inactive="chatbubble-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           title: "나눔",
@@ -330,7 +344,7 @@ function MainTabs() {
               color={color}
               focused={focused}
               inactive="menu-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           title: "전체",
@@ -341,15 +355,17 @@ function MainTabs() {
 }
 
 function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
+  const { activeBackgroundColor, headingColor, iconSize } =
+    useNavigationTokens();
   const { rememberMainTab } = useMainTabHistory();
   const drawerContentContainerStyle = useResolveClassNames("pt-6");
   const drawerItemStyle = useResolveClassNames("mx-3 my-1 rounded-xl");
   const drawerLabelStyle = useResolveClassNames("font-brand-medium text-sm");
   const drawerStyle = useResolveClassNames(
-    "w-[240px] border-r border-[rgba(3,26,23,0.1)] bg-white",
+    "w-[240px] border-r border-border-default bg-static-white",
   );
-  const headerStyle = useResolveClassNames("bg-white");
-  const sceneStyle = useResolveClassNames("bg-[#EFF4F8]");
+  const headerStyle = useResolveClassNames("bg-static-white");
+  const sceneStyle = useResolveClassNames("bg-background");
 
   return (
     <Drawer
@@ -357,17 +373,17 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
       drawerContent={(props) => <MainDrawerContent {...props} />}
       initialRouteName="index"
       screenOptions={{
-        drawerActiveBackgroundColor: "rgba(18, 133, 117, 0.12)",
-        drawerActiveTintColor: HEADING,
+        drawerActiveBackgroundColor: activeBackgroundColor,
+        drawerActiveTintColor: headingColor,
         drawerContentContainerStyle,
-        drawerInactiveTintColor: HEADING,
+        drawerInactiveTintColor: headingColor,
         drawerItemStyle,
         drawerLabelStyle,
         drawerStyle,
         drawerType: isPermanent ? "permanent" : "front",
         headerShown: !isPermanent,
         headerStyle,
-        headerTintColor: HEADING,
+        headerTintColor: headingColor,
         sceneStyle,
         swipeEnabled: !isPermanent,
       }}
@@ -384,7 +400,7 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
               color={color}
               focused={focused}
               inactive="home-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           drawerLabel: "홈",
@@ -400,7 +416,7 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
               color={color}
               focused={focused}
               inactive="book-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           drawerLabel: "일기",
@@ -419,7 +435,7 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
               color={color}
               focused={focused}
               inactive="people-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           drawerLabel: "목원",
@@ -438,7 +454,7 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
               color={color}
               focused={focused}
               inactive="chatbubble-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           drawerLabel: "나눔",
@@ -457,7 +473,7 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
               color={color}
               focused={focused}
               inactive="menu-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           drawerLabel: "전체",

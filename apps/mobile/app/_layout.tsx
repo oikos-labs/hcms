@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaListener } from "react-native-safe-area-context";
-import { Uniwind } from "uniwind";
+import { Uniwind, useResolveClassNames } from "uniwind";
 
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { config } from "@/components/ui/gluestack-ui-provider/config";
@@ -18,11 +18,13 @@ void SplashScreen.preventAutoHideAsync();
 
 function AppLayout() {
   const { theme, resolvedTheme, isHydrated } = useTheme();
+  const activityIndicatorStyle = useResolveClassNames("text-brand-500");
+  const stackContentStyle = useResolveClassNames("flex-1 bg-background");
   const [fontsLoaded, fontError] = useFonts({
-    "Pretendard-Bold": require("../assets/fonts/Pretendard-Bold.otf"),
-    "Pretendard-Medium": require("../assets/fonts/Pretendard-Medium.otf"),
-    "Pretendard-Regular": require("../assets/fonts/Pretendard-Regular.otf"),
-    "Pretendard-SemiBold": require("../assets/fonts/Pretendard-SemiBold.otf"),
+    "Pretendard-Bold": require("@/assets/fonts/Pretendard-Bold.otf"),
+    "Pretendard-Medium": require("@/assets/fonts/Pretendard-Medium.otf"),
+    "Pretendard-Regular": require("@/assets/fonts/Pretendard-Regular.otf"),
+    "Pretendard-SemiBold": require("@/assets/fonts/Pretendard-SemiBold.otf"),
   });
   const isReady = isHydrated && (fontsLoaded || fontError != null);
 
@@ -34,15 +36,8 @@ function AppLayout() {
 
   if (!isReady) {
     return (
-      <View
-        style={{
-          alignItems: "center",
-          backgroundColor: "#EFF4F8",
-          flex: 1,
-          justifyContent: "center",
-        }}
-      >
-        <ActivityIndicator color="#128575" size="large" />
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator color={activityIndicatorStyle.color} size="large" />
       </View>
     );
   }
@@ -53,9 +48,14 @@ function AppLayout() {
         Uniwind.updateInsets(insets);
       }}
     >
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView className="flex-1">
         <GluestackUIProvider mode={theme} style={config[resolvedTheme]}>
-          <Stack screenOptions={{ headerShown: false }} />
+          <Stack
+            screenOptions={{
+              contentStyle: stackContentStyle,
+              headerShown: false,
+            }}
+          />
         </GluestackUIProvider>
       </GestureHandlerRootView>
     </SafeAreaListener>

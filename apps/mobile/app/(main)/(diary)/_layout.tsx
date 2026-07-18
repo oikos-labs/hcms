@@ -1,39 +1,41 @@
 import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { Stack, Tabs, useNavigation } from "expo-router";
-import { Pressable, View, StyleSheet } from "react-native";
+import { Pressable, type ColorValue } from "react-native";
 import { BottomTabBar } from "expo-router/js-tabs";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
 import { useMainTabHistory } from "@/context/MainTabHistoryContext";
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
-const HEADING = "#031A17";
-const NEUTRAL_GRAY = "#3A4D4B";
-const ICON_SIZE = 22;
-const TAB_BAR_HEIGHT = 60;
-const BACK_BUTTON_SIZE = 44;
-const BACK_BUTTON_INSET = (TAB_BAR_HEIGHT - BACK_BUTTON_SIZE) / 2;
-
 function DiaryTabs() {
   const mainTabsNavigation = useNavigation("/(main)");
-  const insets = useSafeAreaInsets();
   const { getPreviousMainTab } = useMainTabHistory();
-  const tabBarLabelStyle = useResolveClassNames(
-    "font-brand-medium text-[11px] leading-[13px]",
+  const navigationTokenStyle = useResolveClassNames(
+    "size-icon-nav text-text-heading",
   );
-  const tabBarIconStyle = useResolveClassNames("mb-0.5 size-[22px]");
+  const backIconColorStyle = useResolveClassNames("text-icon-default");
+  const headingColor = navigationTokenStyle.color as ColorValue;
+  const backIconColor = backIconColorStyle.color as ColorValue;
+  const iconSize = navigationTokenStyle.width as number;
+  const headerTitleStyle = useResolveClassNames(
+    "font-brand-bold text-xl text-text-heading",
+  );
+  const tabBarLabelStyle = useResolveClassNames("font-brand-medium text-label");
+  const tabBarIconStyle = useResolveClassNames("mb-0.5 size-icon-nav");
   const tabBarItemStyle = useResolveClassNames(
     "h-[60px] items-center justify-center py-0",
   );
   const tabBarStyle = useResolveClassNames(
-    "absolute mx-[2.5%] h-[60px] w-[95%] rounded-full border border-[rgba(3,26,23,0.1)] bg-white py-0",
+    "absolute bottom-safe-or-4 mx-[2.5%] h-[60px] w-[95%] rounded-full border border-border-default bg-static-white py-0 shadow-diary-tab",
   );
-  const backTabBarIconStyle = useResolveClassNames("size-[22px]");
+  const gradientStyle = useResolveClassNames(
+    "pointer-events-none absolute inset-x-0 bottom-0 h-[calc(60px+max(env(safe-area-inset-bottom),16px))]",
+  );
+  const backTabBarIconStyle = useResolveClassNames("size-icon-nav");
   const backTabBarItemStyle = useResolveClassNames(
-    "absolute z-[1] size-11 items-center justify-center rounded-full bg-[rgba(3,26,23,0.05)]",
+    "absolute left-2 top-2 z-[1] size-11 items-center justify-center rounded-full bg-fill-neutral-weak",
   );
   const diaryTabBarItemStyle = useResolveClassNames("ml-[60px]");
 
@@ -41,30 +43,26 @@ function DiaryTabs() {
     <Tabs
       initialRouteName="index"
       tabBar={(props) => (
-        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+        <>
           <LinearGradient
             colors={[
-              "rgba(245, 245, 245, 0.1)",
+              "rgba(239, 244, 248, 0.1)",
+              "rgba(239, 244, 248, 0.3)",
               "rgba(245, 245, 245, 0.8)",
-              "rgba(245, 245, 245, 0.95)",
+              "rgba(245, 245, 245, 0.9)",
             ]}
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 60 + Math.max(insets.bottom, 16),
-            }}
-            pointerEvents="none"
+            style={gradientStyle}
           />
 
           <BottomTabBar {...props} />
-        </View>
+        </>
       )}
       screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: HEADING,
-        tabBarInactiveTintColor: HEADING,
+        headerShown: true,
+        headerTitleAlign: "left",
+        headerTitleStyle: [headerTitleStyle, { includeFontPadding: false }],
+        tabBarActiveTintColor: headingColor,
+        tabBarInactiveTintColor: headingColor,
         tabBarHideOnKeyboard: true,
         tabBarButton: (props) => (
           <Pressable
@@ -90,17 +88,7 @@ function DiaryTabs() {
         tabBarLabelPosition: "below-icon",
         tabBarIconStyle,
         tabBarItemStyle,
-        tabBarStyle: [
-          tabBarStyle,
-          {
-            bottom: Math.max(insets.bottom, 16),
-            elevation: 8,
-            shadowColor: HEADING,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.14,
-            shadowRadius: 8,
-          },
-        ],
+        tabBarStyle,
       }}
     >
       <Tabs.Screen
@@ -136,28 +124,26 @@ function DiaryTabs() {
           tabBarIconStyle: backTabBarIconStyle,
           tabBarIcon: () => (
             <Ionicons
-              color={NEUTRAL_GRAY}
+              color={backIconColor}
               name="arrow-back-outline"
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
-          tabBarItemStyle: [
-            backTabBarItemStyle,
-            { left: BACK_BUTTON_INSET, top: BACK_BUTTON_INSET },
-          ],
+          tabBarItemStyle: backTabBarItemStyle,
           tabBarLabel: () => null,
         }}
       />
       <Tabs.Screen
         name="index"
         options={{
+          headerTitle: "목회일기",
           tabBarAccessibilityLabel: "일기",
           tabBarItemStyle: [tabBarItemStyle, diaryTabBarItemStyle],
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               color={color}
               name={focused ? "book" : "book-outline"}
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           title: "일기",
@@ -166,12 +152,13 @@ function DiaryTabs() {
       <Tabs.Screen
         name="review"
         options={{
+          headerTitle: "목회일기 검토",
           tabBarAccessibilityLabel: "검토",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               color={color}
               name={focused ? "file-tray-full" : "file-tray-full-outline"}
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           title: "검토",
@@ -180,9 +167,10 @@ function DiaryTabs() {
       <Tabs.Screen
         name="prayer"
         options={{
+          headerTitle: "기도제목",
           tabBarAccessibilityLabel: "기도",
           tabBarIcon: ({ color, focused }) => (
-            <PrayerIcon color={color} focused={focused} size={ICON_SIZE} />
+            <PrayerIcon color={color} focused={focused} size={iconSize} />
           ),
           title: "기도",
         }}
@@ -190,12 +178,13 @@ function DiaryTabs() {
       <Tabs.Screen
         name="mission"
         options={{
+          headerTitle: "선교관리",
           tabBarAccessibilityLabel: "선교",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               color={color}
               name={focused ? "earth" : "earth-outline"}
-              size={ICON_SIZE}
+              size={iconSize}
             />
           ),
           title: "선교",

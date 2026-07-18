@@ -32,9 +32,9 @@ export default function DiaryScreen() {
     <ScrollView
       className="flex-1 bg-background"
       contentContainerStyle={{
-        paddingBottom: usesSidebar ? 32 : 76 + Math.max(insets.bottom, 16),
+        paddingBottom: usesSidebar ? 32 : 150 + Math.max(insets.bottom, 16),
         paddingHorizontal: 16,
-        paddingTop: Math.max(insets.top, 16) + 16,
+        paddingTop: 16,
       }}
     >
       <Text className="font-brand-regular text-display text-text-heading">

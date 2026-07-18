@@ -2,6 +2,7 @@ import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { Stack, Tabs, useNavigation } from "expo-router";
 import { Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
 import { useMainTabHistory } from "@/context/MainTabHistoryContext";
@@ -9,17 +10,30 @@ import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
 const HEADING = "#031A17";
 const NEUTRAL_GRAY = "#3A4D4B";
-const BORDER_DEFAULT = "rgba(3, 26, 23, 0.1)";
 const ICON_SIZE = 22;
 const TAB_BAR_HEIGHT = 60;
 const BACK_BUTTON_SIZE = 44;
 const BACK_BUTTON_INSET = (TAB_BAR_HEIGHT - BACK_BUTTON_SIZE) / 2;
-const BACK_BUTTON_RESERVED_WIDTH = BACK_BUTTON_SIZE + BACK_BUTTON_INSET * 2;
 
 function DiaryTabs() {
   const mainTabsNavigation = useNavigation("/(main)");
   const insets = useSafeAreaInsets();
   const { getPreviousMainTab } = useMainTabHistory();
+  const tabBarLabelStyle = useResolveClassNames(
+    "font-[Pretendard] text-[11px] font-medium leading-[13px]",
+  );
+  const tabBarIconStyle = useResolveClassNames("mb-0.5 size-[22px]");
+  const tabBarItemStyle = useResolveClassNames(
+    "h-[60px] items-center justify-center py-0",
+  );
+  const tabBarStyle = useResolveClassNames(
+    "absolute mx-[2.5%] h-[60px] w-[95%] rounded-full border border-[rgba(3,26,23,0.1)] bg-white py-0",
+  );
+  const backTabBarIconStyle = useResolveClassNames("size-[22px]");
+  const backTabBarItemStyle = useResolveClassNames(
+    "absolute z-[1] size-11 items-center justify-center rounded-full bg-[rgba(3,26,23,0.05)]",
+  );
+  const diaryTabBarItemStyle = useResolveClassNames("ml-[60px]");
 
   return (
     <Tabs
@@ -41,54 +55,30 @@ function DiaryTabs() {
             aria-selected={props["aria-selected"]}
             android_ripple={props.android_ripple}
             disabled={props.disabled}
+            className="flex-1 self-stretch items-center justify-center p-0 active:opacity-70"
             onLongPress={props.onLongPress}
             onPress={(event) => props.onPress?.(event)}
             role={props.role}
-            style={({ pressed }) => [
-              props.style,
-              {
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 0,
-              },
-              pressed && { opacity: 0.7 },
-            ]}
             testID={props.testID}
           >
             {props.children}
           </Pressable>
         ),
-        tabBarLabelStyle: {
-          fontFamily: "Pretendard",
-          fontSize: 11,
-          fontWeight: "500",
-          includeFontPadding: false,
-          lineHeight: 13,
-        },
+        tabBarLabelStyle: [tabBarLabelStyle, { includeFontPadding: false }],
         tabBarLabelPosition: "below-icon",
-        tabBarIconStyle: {
-          height: ICON_SIZE,
-          marginBottom: 2,
-          width: ICON_SIZE,
-        },
-        tabBarStyle: {
-          bottom: Math.max(insets.bottom, 16),
-          height: TAB_BAR_HEIGHT,
-          width: "95%",
-          marginHorizontal: "2.5%",
-          paddingBottom: 0,
-          paddingTop: 0,
-          position: "absolute",
-          backgroundColor: "#FFFFFF",
-          borderRadius: 999,
-          borderWidth: 1,
-          borderColor: BORDER_DEFAULT,
-          elevation: 8,
-          shadowColor: HEADING,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.14,
-          shadowRadius: 8,
-        },
+        tabBarIconStyle,
+        tabBarItemStyle,
+        tabBarStyle: [
+          tabBarStyle,
+          {
+            bottom: Math.max(insets.bottom, 16),
+            elevation: 8,
+            shadowColor: HEADING,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.14,
+            shadowRadius: 8,
+          },
+        ],
       }}
     >
       <Tabs.Screen
@@ -113,31 +103,16 @@ function DiaryTabs() {
               aria-selected={props["aria-selected"]}
               android_ripple={props.android_ripple}
               disabled={props.disabled}
+              className="size-11 items-center justify-center p-0 active:opacity-70"
               onLongPress={props.onLongPress}
               onPress={(event) => props.onPress?.(event)}
               role={props.role}
-              style={({ pressed }) => [
-                props.style,
-                {
-                  alignItems: "center",
-                  flex: 0,
-                  height: BACK_BUTTON_SIZE,
-                  justifyContent: "center",
-                  padding: 0,
-                  width: BACK_BUTTON_SIZE,
-                },
-                pressed && { opacity: 0.7 },
-              ]}
               testID={props.testID}
             >
               {props.children}
             </Pressable>
           ),
-          tabBarIconStyle: {
-            height: ICON_SIZE,
-            marginBottom: 0,
-            width: ICON_SIZE,
-          },
+          tabBarIconStyle: backTabBarIconStyle,
           tabBarIcon: () => (
             <Ionicons
               color={NEUTRAL_GRAY}
@@ -145,18 +120,10 @@ function DiaryTabs() {
               size={ICON_SIZE}
             />
           ),
-          tabBarItemStyle: {
-            alignItems: "center",
-            backgroundColor: "rgba(3, 26, 23, 0.05)",
-            borderRadius: BACK_BUTTON_SIZE / 2,
-            height: BACK_BUTTON_SIZE,
-            justifyContent: "center",
-            left: BACK_BUTTON_INSET,
-            position: "absolute",
-            top: BACK_BUTTON_INSET,
-            width: BACK_BUTTON_SIZE,
-            zIndex: 1,
-          },
+          tabBarItemStyle: [
+            backTabBarItemStyle,
+            { left: BACK_BUTTON_INSET, top: BACK_BUTTON_INSET },
+          ],
           tabBarLabel: () => null,
         }}
       />
@@ -164,9 +131,7 @@ function DiaryTabs() {
         name="index"
         options={{
           tabBarAccessibilityLabel: "일기",
-          tabBarItemStyle: {
-            marginLeft: BACK_BUTTON_RESERVED_WIDTH,
-          },
+          tabBarItemStyle: [tabBarItemStyle, diaryTabBarItemStyle],
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               color={color}

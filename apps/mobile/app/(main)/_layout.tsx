@@ -12,6 +12,7 @@ import {
 } from "expo-router/drawer";
 import { Platform, Pressable, type ColorValue } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
 import {
@@ -21,9 +22,7 @@ import {
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
 const HEADING = "#031A17";
-const BORDER_DEFAULT = "rgba(3, 26, 23, 0.1)";
 const ICON_SIZE = 22;
-const DRAWER_WIDTH = 240;
 
 type DiaryRouteName = "index" | "review" | "prayer" | "mission";
 
@@ -109,6 +108,10 @@ function MainDrawerContent(props: DrawerContentComponentProps) {
   const { usesCollapsibleSidebar } = useResponsiveLayout();
   const router = useRouter();
   const segments = useSegments();
+  const drawerItemLabelStyle = useResolveClassNames(
+    "font-[Pretendard] text-sm font-medium",
+  );
+  const drawerItemStyle = useResolveClassNames("mx-3 my-1 rounded-xl");
   const focusedMainRoute = props.state.routes[props.state.index]?.name;
   const isDiaryRoute = focusedMainRoute === "(diary)";
   const lastSegment = segments[segments.length - 1] as string | undefined;
@@ -141,20 +144,12 @@ function MainDrawerContent(props: DrawerContentComponentProps) {
         )}
         inactiveTintColor={HEADING}
         label="뒤로"
-        labelStyle={{
-          fontFamily: "Pretendard",
-          fontSize: 14,
-          fontWeight: "500",
-        }}
+        labelStyle={drawerItemLabelStyle}
         onPress={() => {
           props.navigation.navigate(getPreviousMainTab() as never);
           closeCollapsibleDrawer();
         }}
-        style={{
-          borderRadius: 12,
-          marginHorizontal: 12,
-          marginVertical: 4,
-        }}
+        style={drawerItemStyle}
       />
       {DIARY_DRAWER_ITEMS.map((item) => {
         const focused = focusedDiaryRoute === item.route;
@@ -170,20 +165,12 @@ function MainDrawerContent(props: DrawerContentComponentProps) {
             inactiveTintColor={HEADING}
             key={item.route}
             label={item.label}
-            labelStyle={{
-              fontFamily: "Pretendard",
-              fontSize: 14,
-              fontWeight: "500",
-            }}
+            labelStyle={drawerItemLabelStyle}
             onPress={() => {
               router.navigate(item.href);
               closeCollapsibleDrawer();
             }}
-            style={{
-              borderRadius: 12,
-              marginHorizontal: 12,
-              marginVertical: 4,
-            }}
+            style={drawerItemStyle}
           />
         );
       })}
@@ -195,7 +182,18 @@ function MainTabs() {
   const insets = useSafeAreaInsets();
   const { rememberMainTab } = useMainTabHistory();
   const { isMobile } = useResponsiveLayout();
+  const segments = useSegments();
   const isMobileWeb = Platform.OS === "web" && isMobile;
+  const isDiaryRoute = segments.some((segment) => segment === "(diary)");
+  const tabBarLabelStyle = useResolveClassNames(
+    "font-[Pretendard] text-[11px] font-medium leading-[13px]",
+  );
+  const tabBarIconStyle = useResolveClassNames("mb-0.5 size-[22px]");
+  const tabBarStyle = useResolveClassNames(
+    "rounded-t-3xl border border-[rgba(3,26,23,0.1)] bg-white pt-2",
+  );
+  const tabBarItemStyle = useResolveClassNames("items-center justify-center");
+  const hiddenTabBarStyle = useResolveClassNames("hidden");
 
   return (
     <Tabs
@@ -218,55 +216,33 @@ function MainTabs() {
             aria-selected={props["aria-selected"]}
             android_ripple={props.android_ripple}
             disabled={props.disabled}
+            className="flex-1 self-stretch items-center justify-center p-0 active:opacity-70"
             onLongPress={props.onLongPress}
             onPress={(event) => props.onPress?.(event)}
             role={props.role}
-            style={({ pressed }) => [
-              props.style,
-              {
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 0,
-              },
-              pressed && { opacity: 0.7 },
-            ]}
             testID={props.testID}
           >
             {props.children}
           </Pressable>
         ),
-        tabBarLabelStyle: {
-          fontFamily: "Pretendard",
-          fontSize: 11,
-          fontWeight: "500",
-          includeFontPadding: false,
-          lineHeight: 13,
-        },
+        tabBarLabelStyle: [tabBarLabelStyle, { includeFontPadding: false }],
         tabBarLabelPosition: "below-icon",
-        tabBarIconStyle: {
-          height: ICON_SIZE,
-          marginBottom: 2,
-          width: ICON_SIZE,
-        },
-        tabBarStyle: {
-          backgroundColor: "#FFFFFF",
-          borderWidth: 1,
-          borderColor: BORDER_DEFAULT,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          elevation: 12,
-          paddingTop: 8,
-          paddingBottom: Math.max(insets.bottom, 8),
-          shadowColor: HEADING,
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.04,
-          shadowRadius: 10,
-          ...(isMobileWeb && { height: 54 + insets.bottom }),
-        },
-        tabBarItemStyle: {
-          alignItems: "center",
-          justifyContent: "center",
-        },
+        tabBarIconStyle,
+        tabBarStyle: isDiaryRoute
+          ? hiddenTabBarStyle
+          : [
+              tabBarStyle,
+              {
+                elevation: 12,
+                paddingBottom: Math.max(insets.bottom, 8),
+                shadowColor: HEADING,
+                shadowOffset: { width: 0, height: -2 },
+                shadowOpacity: 0.04,
+                shadowRadius: 10,
+                ...(isMobileWeb && { height: 54 + insets.bottom }),
+              },
+            ],
+        tabBarItemStyle,
       }}
     >
       <Tabs.Screen
@@ -301,7 +277,6 @@ function MainTabs() {
               size={ICON_SIZE}
             />
           ),
-          tabBarStyle: { display: "none" },
           title: "일기",
         }}
       />
@@ -368,6 +343,16 @@ function MainTabs() {
 
 function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
   const { rememberMainTab } = useMainTabHistory();
+  const drawerContentContainerStyle = useResolveClassNames("pt-6");
+  const drawerItemStyle = useResolveClassNames("mx-3 my-1 rounded-xl");
+  const drawerLabelStyle = useResolveClassNames(
+    "font-[Pretendard] text-sm font-medium",
+  );
+  const drawerStyle = useResolveClassNames(
+    "w-[240px] border-r border-[rgba(3,26,23,0.1)] bg-white",
+  );
+  const headerStyle = useResolveClassNames("bg-white");
+  const sceneStyle = useResolveClassNames("bg-[#EFF4F8]");
 
   return (
     <Drawer
@@ -377,35 +362,16 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
       screenOptions={{
         drawerActiveBackgroundColor: "rgba(18, 133, 117, 0.12)",
         drawerActiveTintColor: HEADING,
-        drawerContentContainerStyle: {
-          paddingTop: 24,
-        },
+        drawerContentContainerStyle,
         drawerInactiveTintColor: HEADING,
-        drawerItemStyle: {
-          borderRadius: 12,
-          marginHorizontal: 12,
-          marginVertical: 4,
-        },
-        drawerLabelStyle: {
-          fontFamily: "Pretendard",
-          fontSize: 14,
-          fontWeight: "500",
-        },
-        drawerStyle: {
-          backgroundColor: "#FFFFFF",
-          borderRightColor: BORDER_DEFAULT,
-          borderRightWidth: 1,
-          width: DRAWER_WIDTH,
-        },
+        drawerItemStyle,
+        drawerLabelStyle,
+        drawerStyle,
         drawerType: isPermanent ? "permanent" : "front",
         headerShown: !isPermanent,
-        headerStyle: {
-          backgroundColor: "#FFFFFF",
-        },
+        headerStyle,
         headerTintColor: HEADING,
-        sceneStyle: {
-          backgroundColor: "#EFF4F8",
-        },
+        sceneStyle,
         swipeEnabled: !isPermanent,
       }}
     >

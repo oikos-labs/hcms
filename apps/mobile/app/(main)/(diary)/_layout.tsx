@@ -20,7 +20,7 @@ function DiaryTabs() {
   const insets = useSafeAreaInsets();
   const { getPreviousMainTab } = useMainTabHistory();
   const tabBarLabelStyle = useResolveClassNames(
-    "font-[Pretendard] text-[11px] font-medium leading-[13px]",
+    "font-brand-medium text-[11px] leading-[13px]",
   );
   const tabBarIconStyle = useResolveClassNames("mb-0.5 size-[22px]");
   const tabBarItemStyle = useResolveClassNames(

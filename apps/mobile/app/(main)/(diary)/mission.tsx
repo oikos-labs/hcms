@@ -10,7 +10,9 @@ export default function MissionScreen() {
       className="flex-1 items-center justify-center bg-background"
       style={{ paddingBottom: usesSidebar ? 0 : 112 }}
     >
-      <Text className="font-brand text-display text-text-heading">선교</Text>
+      <Text className="font-brand-semibold text-display text-text-heading">
+        선교
+      </Text>
     </View>
   );
 }

@@ -10,7 +10,9 @@ export default function ReviewScreen() {
       className="flex-1 items-center justify-center bg-background"
       style={{ paddingBottom: usesSidebar ? 0 : 112 }}
     >
-      <Text className="font-brand text-display text-text-heading">검토</Text>
+      <Text className="font-brand-semibold text-display text-text-heading">
+        검토
+      </Text>
     </View>
   );
 }

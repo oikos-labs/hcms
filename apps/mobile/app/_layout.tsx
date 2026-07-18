@@ -1,4 +1,5 @@
 import { Stack } from "expo-router";
+import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -17,14 +18,21 @@ void SplashScreen.preventAutoHideAsync();
 
 function AppLayout() {
   const { theme, resolvedTheme, isHydrated } = useTheme();
+  const [fontsLoaded, fontError] = useFonts({
+    "Pretendard-Bold": require("../assets/fonts/Pretendard-Bold.otf"),
+    "Pretendard-Medium": require("../assets/fonts/Pretendard-Medium.otf"),
+    "Pretendard-Regular": require("../assets/fonts/Pretendard-Regular.otf"),
+    "Pretendard-SemiBold": require("../assets/fonts/Pretendard-SemiBold.otf"),
+  });
+  const isReady = isHydrated && (fontsLoaded || fontError != null);
 
   useEffect(() => {
-    if (isHydrated) {
+    if (isReady) {
       void SplashScreen.hideAsync();
     }
-  }, [isHydrated]);
+  }, [isReady]);
 
-  if (!isHydrated) {
+  if (!isReady) {
     return (
       <View
         style={{

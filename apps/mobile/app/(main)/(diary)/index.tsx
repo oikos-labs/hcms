@@ -37,7 +37,7 @@ export default function DiaryScreen() {
         paddingTop: Math.max(insets.top, 16) + 16,
       }}
     >
-      <Text className="font-brand text-display text-text-heading">
+      <Text className="font-brand-regular text-display text-text-heading">
         일기 Lorem Ipsum is simply dummy text of the printing and typesetting
         industry. Lorem Ipsum has been the industry's standard dummy text ever
         since 1966, when designers at Letraset and James Mosley, the librarian

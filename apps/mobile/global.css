@@ -241,14 +241,16 @@
   --color-border-error: rgb(var(--border-error));
 
   /* typography */
-  --font-brand: "Pretendard", sans-serif;
+  --font-brand: "Pretendard-Regular", sans-serif;
+  --font-brand-medium: "Pretendard-Medium", sans-serif;
+  --font-brand-semibold: "Pretendard-SemiBold", sans-serif;
+  --font-brand-bold: "Pretendard-Bold", sans-serif;
   --font-mono: "SF Mono", monospace;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --text-display: 17px;
-  --text-display--font-weight: 600;
   --text-body: 15px;
   --text-body--font-weight: 500;
   --text-caption: 13px;

@@ -109,7 +109,7 @@ function MainDrawerContent(props: DrawerContentComponentProps) {
   const router = useRouter();
   const segments = useSegments();
   const drawerItemLabelStyle = useResolveClassNames(
-    "font-[Pretendard] text-sm font-medium",
+    "font-brand-medium text-sm",
   );
   const drawerItemStyle = useResolveClassNames("mx-3 my-1 rounded-xl");
   const focusedMainRoute = props.state.routes[props.state.index]?.name;
@@ -186,7 +186,7 @@ function MainTabs() {
   const isMobileWeb = Platform.OS === "web" && isMobile;
   const isDiaryRoute = segments.some((segment) => segment === "(diary)");
   const tabBarLabelStyle = useResolveClassNames(
-    "font-[Pretendard] text-[11px] font-medium leading-[13px]",
+    "font-brand-medium text-[11px] leading-[13px]",
   );
   const tabBarIconStyle = useResolveClassNames("mb-0.5 size-[22px]");
   const tabBarStyle = useResolveClassNames(
@@ -345,9 +345,7 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
   const { rememberMainTab } = useMainTabHistory();
   const drawerContentContainerStyle = useResolveClassNames("pt-6");
   const drawerItemStyle = useResolveClassNames("mx-3 my-1 rounded-xl");
-  const drawerLabelStyle = useResolveClassNames(
-    "font-[Pretendard] text-sm font-medium",
-  );
+  const drawerLabelStyle = useResolveClassNames("font-brand-medium text-sm");
   const drawerStyle = useResolveClassNames(
     "w-[240px] border-r border-[rgba(3,26,23,0.1)] bg-white",
   );

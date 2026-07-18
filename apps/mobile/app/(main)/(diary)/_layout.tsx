@@ -53,7 +53,6 @@ function DiaryTabs() {
             }
             aria-label={props["aria-label"]}
             aria-selected={props["aria-selected"]}
-            android_ripple={props.android_ripple}
             disabled={props.disabled}
             className="flex-1 self-stretch items-center justify-center p-0 active:opacity-70"
             onLongPress={props.onLongPress}
@@ -101,7 +100,6 @@ function DiaryTabs() {
               }
               aria-label={props["aria-label"]}
               aria-selected={props["aria-selected"]}
-              android_ripple={props.android_ripple}
               disabled={props.disabled}
               className="size-11 items-center justify-center p-0 active:opacity-70"
               onLongPress={props.onLongPress}

@@ -1,10 +1,24 @@
 import { Ionicons } from "@react-native-vector-icons/ionicons";
-import { Stack, Tabs, useNavigation } from "expo-router";
-import { useCallback } from "react";
-import { Platform, Pressable, View, type ColorValue } from "react-native";
+import { Stack, Tabs, useFocusEffect, useNavigation } from "expo-router";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import {
+  BackHandler,
+  Platform,
+  Pressable,
+  StyleSheet,
+  type ColorValue,
+} from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import { BottomTabBar } from "expo-router/js-tabs";
 import { LinearGradient } from "expo-linear-gradient";
+import Animated, {
+  ReduceMotion,
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+} from "react-native-reanimated";
 import { useCSSVariable, useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
@@ -12,10 +26,50 @@ import { useMainTabHistory } from "@/context/MainTabHistoryContext";
 import { useLeftEdgeSwipe } from "@/hooks/useLeftEdgeSwipe";
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
-function DiaryTabs() {
-  const mainTabsNavigation = useNavigation("/(main)");
-  const { getLastDiaryTab, getPreviousMainTab, rememberDiaryTab } =
-    useMainTabHistory();
+const TAB_BAR_START_OFFSET = 120;
+const ICON_GROW_START_DELAY = 100;
+const EXIT_SCALE = 0.95;
+
+function GrowingTabIcon({
+  animate,
+  children,
+  delay,
+}: {
+  animate: boolean;
+  children: ReactNode;
+  delay: number;
+}) {
+  const scale = useSharedValue(0);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  useEffect(() => {
+    scale.value = 0;
+
+    if (animate) {
+      scale.value = withDelay(
+        delay,
+        withSpring(1, {
+          damping: 14,
+          mass: 0.7,
+          reduceMotion: ReduceMotion.System,
+          stiffness: 220,
+        }),
+      );
+    }
+  }, [animate, delay, scale]);
+
+  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
+}
+
+function DiaryTabs({ onExit }: { onExit: () => void }) {
+  const { getLastDiaryTab, rememberDiaryTab } = useMainTabHistory();
+  const [animateIcons, setAnimateIcons] = useState(false);
+  const tabBarOffset = useSharedValue(TAB_BAR_START_OFFSET);
+  const tabBarAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: tabBarOffset.value }],
+  }));
   const navigationTokenStyle = useResolveClassNames(
     "size-icon-nav text-text-heading",
   );
@@ -50,15 +104,37 @@ function DiaryTabs() {
     "--navigation-gradient-end",
   ]) as [ColorValue, ColorValue, ColorValue, ColorValue];
 
+  useFocusEffect(
+    useCallback(() => {
+      setAnimateIcons(false);
+      tabBarOffset.value = TAB_BAR_START_OFFSET;
+      tabBarOffset.value = withSpring(0, {
+        damping: 17,
+        mass: 0.8,
+        reduceMotion: ReduceMotion.System,
+        stiffness: 180,
+      });
+      setAnimateIcons(true);
+
+      return () => {
+        cancelAnimation(tabBarOffset);
+        setAnimateIcons(false);
+      };
+    }, [tabBarOffset]),
+  );
+
   return (
     <Tabs
       initialRouteName={getLastDiaryTab()}
       tabBar={(props) => (
-        <>
+        <Animated.View
+          pointerEvents="box-none"
+          style={[StyleSheet.absoluteFill, tabBarAnimatedStyle]}
+        >
           <LinearGradient colors={gradientColors} style={gradientStyle} />
 
           <BottomTabBar {...props} />
-        </>
+        </Animated.View>
       )}
       screenOptions={{
         headerShown: true,
@@ -100,7 +176,7 @@ function DiaryTabs() {
         listeners={{
           tabPress: (event) => {
             event.preventDefault();
-            mainTabsNavigation.navigate(getPreviousMainTab() as never);
+            onExit();
           },
         }}
         options={{
@@ -149,11 +225,16 @@ function DiaryTabs() {
           tabBarButtonTestID: "diary-tab-index",
           tabBarItemStyle: [tabBarItemStyle, diaryTabBarItemStyle],
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              color={color}
-              name={focused ? "book" : "book-outline"}
-              size={iconSize}
-            />
+            <GrowingTabIcon
+              animate={animateIcons}
+              delay={ICON_GROW_START_DELAY}
+            >
+              <Ionicons
+                color={color}
+                name={focused ? "book" : "book-outline"}
+                size={iconSize}
+              />
+            </GrowingTabIcon>
           ),
           title: "일기",
         }}
@@ -168,11 +249,16 @@ function DiaryTabs() {
           tabBarAccessibilityLabel: "검토",
           tabBarButtonTestID: "diary-tab-review",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              color={color}
-              name={focused ? "file-tray-full" : "file-tray-full-outline"}
-              size={iconSize}
-            />
+            <GrowingTabIcon
+              animate={animateIcons}
+              delay={ICON_GROW_START_DELAY + 40}
+            >
+              <Ionicons
+                color={color}
+                name={focused ? "file-tray-full" : "file-tray-full-outline"}
+                size={iconSize}
+              />
+            </GrowingTabIcon>
           ),
           title: "검토",
         }}
@@ -187,7 +273,12 @@ function DiaryTabs() {
           tabBarAccessibilityLabel: "기도",
           tabBarButtonTestID: "diary-tab-prayer",
           tabBarIcon: ({ color, focused }) => (
-            <PrayerIcon color={color} focused={focused} size={iconSize} />
+            <GrowingTabIcon
+              animate={animateIcons}
+              delay={ICON_GROW_START_DELAY + 80}
+            >
+              <PrayerIcon color={color} focused={focused} size={iconSize} />
+            </GrowingTabIcon>
           ),
           title: "기도",
         }}
@@ -202,11 +293,16 @@ function DiaryTabs() {
           tabBarAccessibilityLabel: "선교",
           tabBarButtonTestID: "diary-tab-mission",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              color={color}
-              name={focused ? "earth" : "earth-outline"}
-              size={iconSize}
-            />
+            <GrowingTabIcon
+              animate={animateIcons}
+              delay={ICON_GROW_START_DELAY + 120}
+            >
+              <Ionicons
+                color={color}
+                name={focused ? "earth" : "earth-outline"}
+                size={iconSize}
+              />
+            </GrowingTabIcon>
           ),
           title: "선교",
         }}
@@ -250,19 +346,55 @@ export default function DiaryLayout() {
   const mainNavigation = useNavigation("/(main)");
   const { getPreviousMainTab } = useMainTabHistory();
   const { usesPermanentSidebar, usesSidebar } = useResponsiveLayout();
+  const swipeProgress = useSharedValue(0);
+  const pageAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: 1 - swipeProgress.value,
+    transform: [
+      {
+        scale: 1 - (1 - EXIT_SCALE) * swipeProgress.value,
+      },
+    ],
+  }));
   const goBackToMain = useCallback(() => {
     mainNavigation.navigate(getPreviousMainTab() as never);
   }, [getPreviousMainTab, mainNavigation]);
   const edgeSwipe = useLeftEdgeSwipe({
     enabled: Platform.OS !== "web" && !usesPermanentSidebar,
     onSwipe: goBackToMain,
+    progress: swipeProgress,
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      swipeProgress.value = 0;
+
+      if (Platform.OS !== "android") {
+        return;
+      }
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => {
+          goBackToMain();
+          return true;
+        },
+      );
+
+      return () => subscription.remove();
+    }, [goBackToMain, swipeProgress]),
+  );
 
   return (
     <GestureDetector gesture={edgeSwipe}>
-      <View className="flex-1">
-        {usesSidebar ? <DiaryStack /> : <DiaryTabs />}
-      </View>
+      <Animated.View style={[styles.page, pageAnimatedStyle]}>
+        {usesSidebar ? <DiaryStack /> : <DiaryTabs onExit={goBackToMain} />}
+      </Animated.View>
     </GestureDetector>
   );
 }
+
+const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+  },
+});

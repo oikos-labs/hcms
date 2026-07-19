@@ -365,6 +365,8 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
   const { activeBackgroundColor, headingColor, iconSize } =
     useNavigationTokens();
   const { rememberMainTab } = useMainTabHistory();
+  const segments = useSegments();
+  const isDiaryRoute = segments.some((segment) => segment === "(diary)");
   const drawerContentContainerStyle = useResolveClassNames("pt-6");
   const drawerItemStyle = useResolveClassNames("mx-3 my-1 rounded-xl");
   const drawerLabelStyle = useResolveClassNames("font-brand-medium text-sm");
@@ -392,7 +394,7 @@ function MainDrawer({ isPermanent }: { isPermanent: boolean }) {
         headerStyle,
         headerTintColor: headingColor,
         sceneStyle,
-        swipeEnabled: !isPermanent,
+        swipeEnabled: !isPermanent && !isDiaryRoute,
       }}
     >
       <Drawer.Screen

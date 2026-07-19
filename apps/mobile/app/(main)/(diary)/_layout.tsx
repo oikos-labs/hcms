@@ -1,12 +1,15 @@
 import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { Stack, Tabs, useNavigation } from "expo-router";
-import { Pressable, type ColorValue } from "react-native";
+import { useCallback } from "react";
+import { Platform, Pressable, View, type ColorValue } from "react-native";
+import { GestureDetector } from "react-native-gesture-handler";
 import { BottomTabBar } from "expo-router/js-tabs";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCSSVariable, useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
 import { useMainTabHistory } from "@/context/MainTabHistoryContext";
+import { useLeftEdgeSwipe } from "@/hooks/useLeftEdgeSwipe";
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
 
 function DiaryTabs() {
@@ -244,7 +247,22 @@ function DiaryStack() {
 }
 
 export default function DiaryLayout() {
-  const { usesSidebar } = useResponsiveLayout();
+  const mainNavigation = useNavigation("/(main)");
+  const { getPreviousMainTab } = useMainTabHistory();
+  const { usesPermanentSidebar, usesSidebar } = useResponsiveLayout();
+  const goBackToMain = useCallback(() => {
+    mainNavigation.navigate(getPreviousMainTab() as never);
+  }, [getPreviousMainTab, mainNavigation]);
+  const edgeSwipe = useLeftEdgeSwipe({
+    enabled: Platform.OS !== "web" && !usesPermanentSidebar,
+    onSwipe: goBackToMain,
+  });
 
-  return usesSidebar ? <DiaryStack /> : <DiaryTabs />;
+  return (
+    <GestureDetector gesture={edgeSwipe}>
+      <View className="flex-1">
+        {usesSidebar ? <DiaryStack /> : <DiaryTabs />}
+      </View>
+    </GestureDetector>
+  );
 }

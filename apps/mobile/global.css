@@ -44,8 +44,8 @@
       --brand-900: 4 34 32;
       --brand-950: 2 21 18;
       --brand-opacity-12: rgb(18 133 117 / 0.12);
-      --brand-opacity-18: rgb(18 133 117 / 0.2);
-      --brand-opacity-22: rgb(93 154 112 / 0.12);
+      --brand-opacity-18: rgb(18 133 117 / 0.18);
+      --brand-opacity-22: rgb(93 154 112 / 0.22);
       --static-white: 255 255 255;
       --static-black: 0 0 0;
       --slate-600: 58 77 75;
@@ -124,8 +124,8 @@
       --brand-800: 161 228 219;
       --brand-900: 208 242 238;
       --brand-950: 237 250 248;
-      --brand-opacity-12: rgb(18 133 117 / 0.22);
-      --brand-opacity-18: rgb(18 133 117 / 0.2);
+      --brand-opacity-12: rgb(18 133 117 / 0.12);
+      --brand-opacity-18: rgb(18 133 117 / 0.18);
       --brand-opacity-22: rgb(93 154 112 / 0.22);
       --static-white: 255 255 255;
       --static-black: 0 0 0;

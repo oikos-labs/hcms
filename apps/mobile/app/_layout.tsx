@@ -29,6 +29,12 @@ function AppLayout() {
   const isReady = isHydrated && (fontsLoaded || fontError != null);
 
   useEffect(() => {
+    if (fontError) {
+      console.warn("Unable to load custom fonts.", fontError);
+    }
+  }, [fontError]);
+
+  useEffect(() => {
     if (isReady) {
       void SplashScreen.hideAsync();
     }

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import {
   BackHandler,
   Platform,
-  Pressable,
   StyleSheet,
   type ColorValue,
 } from "react-native";
@@ -22,6 +21,10 @@ import Animated, {
 import { useCSSVariable, useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
+import {
+  AnimatedTabIcon,
+  HapticTabButton,
+} from "@/components/navigation/HapticTabButton";
 import { useMainTabHistory } from "@/context/MainTabHistoryContext";
 import { useLeftEdgeSwipe } from "@/hooks/useLeftEdgeSwipe";
 import { useResponsiveLayout } from "@/hooks/useResponsiveLayout";
@@ -60,7 +63,11 @@ function GrowingTabIcon({
     }
   }, [animate, delay, scale]);
 
-  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
+  return (
+    <Animated.View style={animatedStyle}>
+      <AnimatedTabIcon>{children}</AnimatedTabIcon>
+    </Animated.View>
+  );
 }
 
 function DiaryTabs({ onExit }: { onExit: () => void }) {
@@ -145,7 +152,7 @@ function DiaryTabs({ onExit }: { onExit: () => void }) {
         tabBarInactiveTintColor: headingColor,
         tabBarHideOnKeyboard: true,
         tabBarButton: (props) => (
-          <Pressable
+          <HapticTabButton
             accessibilityLargeContentTitle={
               props.accessibilityLargeContentTitle
             }
@@ -162,7 +169,7 @@ function DiaryTabs({ onExit }: { onExit: () => void }) {
             testID={props.testID}
           >
             {props.children}
-          </Pressable>
+          </HapticTabButton>
         ),
         tabBarLabelStyle: [tabBarLabelStyle, { includeFontPadding: false }],
         tabBarLabelPosition: "below-icon",
@@ -183,7 +190,7 @@ function DiaryTabs({ onExit }: { onExit: () => void }) {
           tabBarAccessibilityLabel: "메인 탭으로 돌아가기",
           tabBarButtonTestID: "diary-tab-back",
           tabBarButton: (props) => (
-            <Pressable
+            <HapticTabButton
               accessibilityLargeContentTitle={
                 props.accessibilityLargeContentTitle
               }
@@ -200,15 +207,17 @@ function DiaryTabs({ onExit }: { onExit: () => void }) {
               testID={props.testID}
             >
               {props.children}
-            </Pressable>
+            </HapticTabButton>
           ),
           tabBarIconStyle: backTabBarIconStyle,
           tabBarIcon: () => (
-            <Ionicons
-              color={backIconColor}
-              name="arrow-back-outline"
-              size={iconSize}
-            />
+            <AnimatedTabIcon>
+              <Ionicons
+                color={backIconColor}
+                name="arrow-back-outline"
+                size={iconSize}
+              />
+            </AnimatedTabIcon>
           ),
           tabBarItemStyle: backTabBarItemStyle,
           tabBarLabel: () => null,

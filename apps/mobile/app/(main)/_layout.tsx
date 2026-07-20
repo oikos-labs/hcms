@@ -10,10 +10,14 @@ import {
   DrawerItemList,
   type DrawerContentComponentProps,
 } from "expo-router/drawer";
-import { Platform, Pressable, type ColorValue } from "react-native";
+import { Platform, type ColorValue } from "react-native";
 import { useResolveClassNames } from "uniwind";
 
 import { PrayerIcon } from "@/components/navigation/PrayerIcon";
+import {
+  AnimatedTabIcon,
+  HapticTabButton,
+} from "@/components/navigation/HapticTabButton";
 import {
   MainTabHistoryProvider,
   useMainTabHistory,
@@ -86,7 +90,9 @@ type TabIconProps = {
 
 function TabIcon({ active, color, focused, inactive, size }: TabIconProps) {
   return (
-    <Ionicons color={color} name={focused ? active : inactive} size={size} />
+    <AnimatedTabIcon>
+      <Ionicons color={color} name={focused ? active : inactive} size={size} />
+    </AnimatedTabIcon>
   );
 }
 
@@ -230,7 +236,7 @@ function MainTabs() {
         tabBarInactiveTintColor: headingColor,
         tabBarHideOnKeyboard: true,
         tabBarButton: (props) => (
-          <Pressable
+          <HapticTabButton
             accessibilityLargeContentTitle={
               props.accessibilityLargeContentTitle
             }
@@ -247,7 +253,7 @@ function MainTabs() {
             testID={props.testID}
           >
             {props.children}
-          </Pressable>
+          </HapticTabButton>
         ),
         tabBarLabelStyle: [tabBarLabelStyle, { includeFontPadding: false }],
         tabBarLabelPosition: "below-icon",

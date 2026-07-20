@@ -36,9 +36,12 @@ describe("HapticTabButton", () => {
         </AnimatedTabIcon>
       </HapticTabButton>,
     );
+    const button = getByRole("button");
 
-    await fireEvent.press(getByRole("button"));
-    await fireEvent.press(getByRole("button"));
+    await fireEvent(button, "pressIn");
+    await fireEvent.press(button);
+    await fireEvent(button, "pressIn");
+    await fireEvent.press(button);
 
     expect(Haptics.impactAsync).toHaveBeenCalledTimes(2);
     expect(Haptics.impactAsync).toHaveBeenCalledWith(

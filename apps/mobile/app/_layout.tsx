@@ -68,6 +68,7 @@ function AppLayout() {
   );
 }
 
+/** Provides theme state and application-wide navigation infrastructure. */
 export default function RootLayout() {
   return (
     <ThemeProvider>

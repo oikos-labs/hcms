@@ -1,5 +1,6 @@
 import { vars } from "nativewind";
 
+/** Theme token configuration consumed by the application UI provider. */
 export const config = {
   light: vars({
     "--primary": "18 133 117",

@@ -1,8 +1,12 @@
 import { useWindowDimensions } from "react-native";
 
+/** Minimum viewport width, in pixels, for the tablet layout. */
 export const TABLET_BREAKPOINT = 768;
+
+/** Minimum viewport width, in pixels, for the desktop layout. */
 export const DESKTOP_BREAKPOINT = 1024;
 
+/** Responsive state derived from the current viewport dimensions. */
 export type ResponsiveLayout = {
   height: number;
   isDesktop: boolean;
@@ -16,6 +20,16 @@ export type ResponsiveLayout = {
   width: number;
 };
 
+/**
+ * Derives layout and sidebar behavior from viewport dimensions.
+ *
+ * Tablet landscape uses a permanent sidebar, while tablet portrait uses a
+ * collapsible sidebar. Mobile layouts do not use a sidebar.
+ *
+ * @param width - Viewport width in pixels.
+ * @param height - Viewport height in pixels.
+ * @returns Responsive flags and the source dimensions.
+ */
 export function getResponsiveLayout(
   width: number,
   height: number,
@@ -41,6 +55,7 @@ export function getResponsiveLayout(
   };
 }
 
+/** Returns responsive layout state that updates with window dimensions. */
 export function useResponsiveLayout(): ResponsiveLayout {
   const { height, width } = useWindowDimensions();
 

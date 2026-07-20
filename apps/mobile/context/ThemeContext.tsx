@@ -11,7 +11,10 @@ import {
 import { useColorScheme } from "react-native";
 import { Uniwind } from "uniwind";
 
+/** A user-selectable theme preference. */
 export type ThemeMode = "light" | "dark" | "system";
+
+/** The concrete color theme after resolving a system preference. */
 export type ResolvedTheme = Exclude<ThemeMode, "system">;
 
 const THEME_STORAGE_KEY = "@hcms/theme-mode";
@@ -30,6 +33,12 @@ function isThemeMode(value: string | null): value is ThemeMode {
   return value === "light" || value === "dark" || value === "system";
 }
 
+/**
+ * Hydrates, persists, and applies the application's theme preference.
+ *
+ * Consumers can use `isHydrated` to avoid rendering theme-dependent UI before
+ * the saved preference has been read from device storage.
+ */
 export function ThemeProvider({ children }: PropsWithChildren) {
   const systemColorScheme = useColorScheme();
   const [theme, setThemeState] = useState<ThemeMode>(DEFAULT_THEME);
@@ -91,6 +100,11 @@ export function ThemeProvider({ children }: PropsWithChildren) {
   );
 }
 
+/**
+ * Returns the current theme state and persistence-aware theme setter.
+ *
+ * @throws Error if called outside {@link ThemeProvider}.
+ */
 export function useTheme() {
   const context = useContext(ThemeContext);
 

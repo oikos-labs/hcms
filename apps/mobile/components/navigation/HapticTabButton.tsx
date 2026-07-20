@@ -20,6 +20,13 @@ const TabPressAnimationContext = createContext<SharedValue<number> | null>(
   null,
 );
 
+/**
+ * A tab-bar press target that provides light haptic feedback and a shared press
+ * animation to descendant {@link AnimatedTabIcon} components.
+ *
+ * Haptic failures are ignored because feedback availability depends on the
+ * device and its system settings.
+ */
 export function HapticTabButton({
   children,
   onPress,
@@ -51,6 +58,7 @@ export function HapticTabButton({
   );
 }
 
+/** Animates its child icon using the nearest {@link HapticTabButton} press. */
 export function AnimatedTabIcon({ children }: { children: ReactNode }) {
   const contextProgress = useContext(TabPressAnimationContext);
   const fallbackProgress = useSharedValue(0);

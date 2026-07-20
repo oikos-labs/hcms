@@ -22,6 +22,14 @@ type UseLeftEdgeSwipeOptions = {
   progress?: SharedValue<number>;
 };
 
+/**
+ * Creates a left-edge pan gesture that invokes a callback once per completed
+ * swipe.
+ *
+ * The completion distance scales with viewport width and has a minimum
+ * threshold. When supplied, `progress` is updated from zero to one and springs
+ * back to zero after an incomplete swipe.
+ */
 export function useLeftEdgeSwipe({
   enabled = true,
   onSwipe,

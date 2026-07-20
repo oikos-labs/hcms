@@ -351,6 +351,10 @@ function DiaryStack() {
   );
 }
 
+/**
+ * Presents diary routes as bottom tabs or a nested stack and normalizes exit
+ * behavior across tab presses, edge swipes, and the Android back button.
+ */
 export default function DiaryLayout() {
   const mainNavigation = useNavigation("/(main)");
   const { getPreviousMainTab } = useMainTabHistory();

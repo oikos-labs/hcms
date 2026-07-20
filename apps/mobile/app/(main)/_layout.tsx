@@ -509,6 +509,10 @@ function ResponsiveMainNavigator() {
   );
 }
 
+/**
+ * Provides main-route history and selects tab or drawer navigation according
+ * to the current viewport.
+ */
 export default function MainTabsLayout() {
   return (
     <MainTabHistoryProvider>

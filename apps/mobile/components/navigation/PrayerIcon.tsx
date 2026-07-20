@@ -11,6 +11,7 @@ type PrayerIconProps = {
   size: number;
 };
 
+/** Renders the filled or outlined prayer icon according to tab focus state. */
 export function PrayerIcon({ color, focused, size }: PrayerIconProps) {
   const prayerAsset = focused ? prayerFilledAsset : prayerOutlineAsset;
   const prayerUri = Asset.fromModule(prayerAsset).uri;

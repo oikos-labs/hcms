@@ -3,11 +3,22 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 
+/**
+ * NestJS-managed Prisma client backed by the PostgreSQL driver adapter.
+ *
+ * Database connections are intentionally skipped in tests so unit tests do not
+ * require a running PostgreSQL instance.
+ */
 @Injectable()
 export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
+  /**
+   * Creates a Prisma client using `DATABASE_URL`.
+   *
+   * @throws Error when `DATABASE_URL` is missing outside the test environment.
+   */
   constructor() {
     const connectionString =
       process.env.DATABASE_URL ??
@@ -27,6 +38,7 @@ export class PrismaService
     super({ adapter });
   }
 
+  /** Opens the database connection when the NestJS module starts. */
   async onModuleInit() {
     if (process.env.NODE_ENV === 'test') {
       return;
@@ -35,6 +47,7 @@ export class PrismaService
     await this.$connect();
   }
 
+  /** Closes the database connection during NestJS module shutdown. */
   async onModuleDestroy() {
     if (process.env.NODE_ENV === 'test') {
       return;

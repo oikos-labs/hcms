@@ -1,5 +1,0 @@
-appId: com.hcms.mobile
----
-- launchApp:
-    clearState: true
-- assertVisible: HCMS

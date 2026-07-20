@@ -1,0 +1,118 @@
+appId: com.hcms.mobile
+---
+- launchApp:
+    clearState: false
+- runFlow:
+    when:
+      visible: DEVELOPMENT SERVERS
+    commands:
+      - extendedWaitUntil:
+          visible: "http://.*:8081"
+          timeout: 60000
+      - tapOn:
+          text: "http://.*:8081"
+- extendedWaitUntil:
+    visible:
+      id: home-screen
+    timeout: 60000
+
+# Opening Diary replaces the main tab bar with the complete diary tab layout.
+- assertVisible:
+    id: home-screen
+- tapOn:
+    id: main-tab-diary
+- assertVisible:
+    id: diary-index-screen
+- assertVisible:
+    id: diary-tab-back
+- assertVisible:
+    id: diary-tab-index
+- assertVisible:
+    id: diary-tab-review
+- assertVisible:
+    id: diary-tab-prayer
+- assertVisible:
+    id: diary-tab-mission
+- assertNotVisible:
+    id: main-tab-home
+
+# Every diary route opens the matching screen and can return to Diary.
+- tapOn:
+    id: diary-tab-review
+- assertVisible:
+    id: diary-review-screen
+- tapOn:
+    id: diary-tab-prayer
+- assertVisible:
+    id: diary-prayer-screen
+- tapOn:
+    id: diary-tab-mission
+- assertVisible:
+    id: diary-mission-screen
+- tapOn:
+    id: diary-tab-index
+- assertVisible:
+    id: diary-index-screen
+
+# The diary back control returns to the main tab that opened Diary.
+- tapOn:
+    id: diary-tab-back
+- assertVisible:
+    id: home-screen
+- tapOn:
+    id: main-tab-mokwon
+- assertVisible:
+    id: mokwon-screen
+- tapOn:
+    id: main-tab-diary
+- assertVisible:
+    id: diary-index-screen
+- tapOn:
+    id: diary-tab-review
+- assertVisible:
+    id: diary-review-screen
+- tapOn:
+    id: diary-tab-back
+- assertVisible:
+    id: mokwon-screen
+- tapOn:
+    id: main-tab-diary
+- assertVisible:
+    id: diary-review-screen
+- tapOn:
+    id: diary-tab-back
+- assertVisible:
+    id: mokwon-screen
+
+# A rightward swipe beginning at the left edge leaves the diary layout.
+- tapOn:
+    id: main-tab-diary
+- assertVisible:
+    id: diary-review-screen
+- swipe:
+    start: 1%, 50%
+    end: 65%, 50%
+    duration: 500
+- assertVisible:
+    id: mokwon-screen
+
+# Android's system Back event is also emitted by the system back-swipe gesture.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: main-tab-nanum
+      - assertVisible:
+          id: nanum-screen
+      - tapOn:
+          id: main-tab-diary
+      - assertVisible:
+          id: diary-review-screen
+      - tapOn:
+          id: diary-tab-prayer
+      - assertVisible:
+          id: diary-prayer-screen
+      - back
+      - assertVisible:
+          id: nanum-screen
